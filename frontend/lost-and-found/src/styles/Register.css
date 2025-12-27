@@ -1,0 +1,116 @@
+@import url(colors.css);
+@import url(error.css);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: var(--blue-zodiac);
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* LEFT PANEL */
+.left-panel {
+    width: 500px;
+    padding: 50px 40px;
+    background: var(--regal-blue);
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    color: var(--carousel-pink);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: start;     
+    text-align: start;
+}
+
+.logo {
+    width: 180px;
+    margin-bottom: 40px;
+}
+
+.left-panel h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.form {
+    width: 100%;
+}
+
+/* FORM */
+.form label {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+    display: block;
+    color:var(--carousel-pink);
+}
+
+.form input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background-color: var(--lily-white);
+}
+
+.form input::placeholder {
+    color: #848484;
+}
+
+/* BUTTON */
+.form button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
+    margin-top: 40px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lily-white);
+    background: linear-gradient(90deg, var(--sea), var(--deep-rose));
+    transition: opacity 0.3s ease;
+}
+
+.form button:hover {
+    opacity: 0.9;
+}
+
+/* SIGN IN */
+.signin {
+    margin-top: 18px;
+    font-size: 12px;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.signin a {
+    color: var(--carousel-pink);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-img {
+    width: 260px;
+}

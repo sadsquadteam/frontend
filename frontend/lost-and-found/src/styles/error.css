@@ -1,0 +1,10 @@
+.error {
+    display: block;
+    margin: -12px 0 14px 10px;
+    font-size: 13px;
+    color: var(--deep-rose);
+}
+
+.input-error {
+    border: 1px solid var(--deep-rose);
+}
