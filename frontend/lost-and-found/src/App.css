@@ -1,5 +1,3 @@
-/* Vite default styles */
-/* Import all modular CSS files */
 @import './styles/index.css';
 #root {
   max-width: 1280px;

@@ -1,8 +1,7 @@
-/* ===== HEADER ===== */
 .header {
   height: 72px;
   min-height: 72px;
-  background: var(--white);
+  background: var(--lily-white);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -44,10 +43,10 @@
   padding: 0 42px 0 16px;
   border-radius: 10px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--lily-white);
   outline: none;
   font-size: 14px;
-  color: var(--text);
+  color: var(--blue-zodiac);
   transition: all 0.2s ease;
 }
 

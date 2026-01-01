@@ -3,9 +3,8 @@ import "./App.css";
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { SimpleMap } from "./components/Map";
-import Register from "./pages/Auth/Register"; // Adjust path as needed
+import Register from "./pages/Auth/Register"; 
 
-// Main Layout Component (for the dashboard view)
 const MainLayout = () => {
   return (
     <div className="layout">

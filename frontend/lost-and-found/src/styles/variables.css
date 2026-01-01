@@ -5,16 +5,6 @@
   --sea: #3B9797;
   --deep-rose: #CF366B;
   --carousel-pink: #FFDDE9;
-  
-  /* Semantic color mappings */
-  --primary: var(--sea);
-  --primary-hover: #2d7c7c;
-  --secondary: var(--regal-blue);
-  --bg: var(--lily-white);
-  --white: #ffffff;
-  --text: var(--blue-zodiac);
   --muted: #7c8ca3;
   --border: #d1dbe8;
-  --accent: var(--deep-rose);
-  --accent-light: var(--carousel-pink);
 }
