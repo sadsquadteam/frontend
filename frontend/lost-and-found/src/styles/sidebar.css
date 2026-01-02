@@ -13,15 +13,21 @@
 }
 
 .sidebar__logo {
-  width: 36px;
-  height: 36px;
-  background: var(--sea);
+  width: 40px;
+  height: 40px;
+  background: var(--lily-white);
   color: white;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
+}
+
+.sidebar__logo img {
+  width: 100%;
+  height: auto; 
+  max-width: 150px; 
 }
 
 .sidebar-nav {
