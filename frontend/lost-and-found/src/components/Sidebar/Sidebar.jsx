@@ -1,12 +1,12 @@
 import React from 'react';
 import SidebarNav from './SidebarNav';
-import logo from '../../assets/images/Logo-icon.svg';  // Adjust the path to your logo.svg file
+import logo from '../../assets/images/Logo-icon.svg'; 
 
 const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar__logo">
-        <img src={logo} alt="Logo" /> {/* Display the logo icon */}
+        <img src={logo} alt="Logo" />
       </div>
       <SidebarNav />
       <div className="avatar" />

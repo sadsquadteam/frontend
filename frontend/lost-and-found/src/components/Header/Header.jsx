@@ -4,7 +4,7 @@ import SearchBar from './SearchBar';
 import { Button } from '../UI';
 import { ICONS } from '../../styles/icons';
 
-const Header = ({ title = "Lost&Found" }) => {
+const Header = ({ title = "Lost&Found", children }) => {
   const navigate = useNavigate();
   const SlidersIcon = ICONS.SLIDERS;
   const PlusIcon = ICONS.PLUS;
@@ -14,13 +14,21 @@ const Header = ({ title = "Lost&Found" }) => {
   };
   
   const handleCustomizeClick = () => {
-    // Add your customize logic here
     console.log('Customize clicked');
   };
+
+  let headerContent;
   
+  // Check if children (image) is provided, otherwise use title
+  if (children) {
+    headerContent = <div className="logo-container">{children}</div>;
+  } else {
+    headerContent = <h1>{title}</h1>;
+  }
+
   return (
     <header className="header">
-      <h1>{title}</h1>
+      {headerContent} {/* Render either logo or title */}
       
       <div className="spacer" />
       

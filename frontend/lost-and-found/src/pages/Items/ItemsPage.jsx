@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import ItemsGrid from '../../components/Items/ItemsGrid';
+import logoText from '../../assets/images/logo-text.svg'; 
 
 const ItemsPage = () => {
   return (
@@ -9,7 +10,9 @@ const ItemsPage = () => {
       <Sidebar />
       
       <div className="main">
-        <Header title="Lost & Found" />
+          <Header>
+            <img src={logoText} alt="Logo" />
+          </Header>
         
         <main className="content">
           <ItemsGrid />
