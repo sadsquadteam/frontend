@@ -1,0 +1,114 @@
+/* Card Styles */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+.card-wrap {
+  width: 100%;
+  max-width: 280px;
+  background: #fff;
+  border-radius: 20px;
+  border: 5px solid #fff;
+  overflow: hidden;
+  color: var(--color-text, #616161);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 30px,
+              rgba(0, 0, 0, 0.05) 0px 6px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-wrap:hover {
+  transform: translateY(-8px);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 40px,
+              rgba(0, 0, 0, 0.1) 0px 15px 20px;
+}
+
+.card-header {
+  height: 180px;
+  width: 100%;
+  background: red;
+  border-radius: 100% 0% 100% 0% / 0% 50% 50% 100%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.card-header i {
+  color: #fff;
+  font-size: 64px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px 0;
+  flex-grow: 1;
+}
+
+.card-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  color: var(--blue-zodiac, #132440);
+}
+
+.card-text {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: var(--muted, #7c8ca3);
+  flex-grow: 1;
+}
+
+.card-btn {
+  border: none;
+  border-radius: 100px;
+  padding: 10px 30px;
+  color: #fff;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.card-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Color variations */
+.card-header.one {
+  background: linear-gradient(135deg, #f12711, #f5af19);
+}
+.card-header.two {
+  background: linear-gradient(135deg, #7F00FF, #E100FF);
+}
+.card-header.three {
+  background: linear-gradient(135deg, #3f2b96, #a8c0ff);
+}
+.card-header.four {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.card-btn.one {
+  background: linear-gradient(to right, #f12711, #f5af19);
+}
+.card-btn.two {
+  background: linear-gradient(to right, #7F00FF, #E100FF);
+}
+.card-btn.three {
+  background: linear-gradient(to right, #3f2b96, #a8c0ff);
+}
+.card-btn.four {
+  background: linear-gradient(to right, #11998e, #38ef7d);
+}
