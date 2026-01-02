@@ -6,35 +6,38 @@ const SidebarNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  const isDashboard = location.pathname === '/' || location.pathname === '/dashboard';
+  const isItems = location.pathname === '/items' || location.pathname.startsWith('/items/');
+  
   const navItems = [
     { 
       icon: ICONS.HOUSE, 
-      active: location.pathname === '/dashboard',
+      active: isDashboard,
       onClick: () => navigate('/dashboard'),
       tooltip: 'Dashboard'
     },
     { 
       icon: ICONS.CHART,
-      active: location.pathname === '/analytics',
-      onClick: () => navigate('/analytics'),
+      active: false,
+      onClick: () => console.log('Analytics clicked'),
       tooltip: 'Analytics'
     },
     { 
       icon: ICONS.USERS,
-      active: location.pathname === '/items' || location.pathname.startsWith('/items/'),
+      active: isItems,
       onClick: () => navigate('/items'),
       tooltip: 'Items'
     },
     { 
       icon: ICONS.LAYERS,
-      active: location.pathname === '/layers',
-      onClick: () => navigate('/layers'),
+      active: false,
+      onClick: () => console.log('Layers clicked'),
       tooltip: 'Layers'
     },
     { 
       icon: ICONS.GEAR,
-      active: location.pathname === '/settings',
-      onClick: () => navigate('/settings'),
+      active: false,
+      onClick: () => console.log('Settings clicked'),
       tooltip: 'Settings'
     },
   ];
