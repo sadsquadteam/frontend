@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 const SimpleMap = () => {
   const sharifCenter = [35.7036, 51.3515];
   
-  // Define the boundaries (South-West and North-East corners)
   const bounds = [
     [35.698, 51.340], // Southwest coordinates
     [35.710, 51.365], // Northeast coordinates

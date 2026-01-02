@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import ItemCard from './ItemCard';
 import '../../styles/items.css';
 
-// Sample data
 const sampleItems = [
   { id: 1, title: 'Item 1', description: 'Description for item 1', icon: 'fas fa-code', category: 'Code' },
   { id: 2, title: 'Item 2', description: 'Description for item 2', icon: 'fab fa-css3-alt', category: 'CSS' },
@@ -23,7 +22,7 @@ const ItemsGrid = () => {
   const navigate = useNavigate();
   
   const handleAddNewItem = () => {
-    navigate('/register');
+    navigate('/add-item'); // Changed from '/register' to '/add-item'
   };
   
   return (
