@@ -1,17 +1,16 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '../../styles/items.css';
 
-// Sample data - replace with your actual data source
 const sampleItems = [
-  { id: 1, title: 'JavaScript', description: 'JavaScript programming concepts and examples', 
-    icon: 'fab fa-js-square', category: 'JS', 
-    fullDescription: 'JavaScript is a versatile programming language used for web development. It allows you to create interactive websites and web applications.',
+  { id: 1, title: 'Item 1', description: 'Description for item 1', 
+    icon: 'fas fa-code', category: 'Code', 
+    fullDescription: 'This is a detailed description of Item 1. It contains more information about the item, its features, and specifications.',
     details: {
-      level: 'Intermediate',
-      duration: '40 hours',
-      projects: 5,
-      lastUpdated: '2024-01-15'
+      status: 'Active',
+      created: '2024-01-15',
+      updated: '2024-03-20',
+      owner: 'John Doe'
     }
   },
   // Add more items...
@@ -19,86 +18,69 @@ const sampleItems = [
 
 const ItemDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   
   const item = sampleItems.find(item => item.id === parseInt(id));
   
   if (!item) {
     return (
-      <div className="item-detail-container">
+      <div className="item-detail-content">
         <div className="item-not-found">
           <h2>Item not found</h2>
-          <button onClick={() => navigate('/items')}>
-            Back to Items
-          </button>
+          <p>The item you're looking for doesn't exist.</p>
         </div>
       </div>
     );
   }
   
   const cardColors = [
-    { header: 'one', btn: 'one', colors: ['#f12711', '#f5af19'] },
-    { header: 'two', btn: 'two', colors: ['#7F00FF', '#E100FF'] },
-    { header: 'three', btn: 'three', colors: ['#3f2b96', '#a8c0ff'] },
-    { header: 'four', btn: 'four', colors: ['#11998e', '#38ef7d'] },
+    { header: 'one', colors: ['#f12711', '#f5af19'] },
+    { header: 'two', colors: ['#7F00FF', '#E100FF'] },
+    { header: 'three', colors: ['#3f2b96', '#a8c0ff'] },
+    { header: 'four', colors: ['#11998e', '#38ef7d'] },
   ];
   
   const colorIndex = item.id % 4;
   const colorClass = cardColors[colorIndex];
   
   return (
-    <div className="item-detail-container">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/items')}
-      >
-        ← Back to Items
-      </button>
-      
-      <div className="item-detail-content">
-        <div className="item-detail-header">
-          <div className={`item-detail-icon ${colorClass.header}`}>
+    <div className="item-detail-content">
+      <div className="item-detail-card">
+        <div className={`item-detail-header ${colorClass.header}`}>
+          <div className="item-header-icon">
             <i className={item.icon}></i>
           </div>
-          <div className="item-detail-info">
+          <div className="item-header-info">
             <h1>{item.title}</h1>
-            <p className="item-category">{item.category}</p>
+            <span className="item-category">{item.category}</span>
           </div>
         </div>
         
         <div className="item-detail-body">
-          <div className="item-description">
+          <div className="item-description-section">
             <h3>Description</h3>
             <p>{item.fullDescription || item.description}</p>
           </div>
           
-          <div className="item-details-grid">
-            <div className="detail-card">
-              <h4>Level</h4>
-              <p>{item.details?.level || 'Not specified'}</p>
-            </div>
-            <div className="detail-card">
-              <h4>Duration</h4>
-              <p>{item.details?.duration || 'Not specified'}</p>
-            </div>
-            <div className="detail-card">
-              <h4>Projects</h4>
-              <p>{item.details?.projects || '0'}</p>
-            </div>
-            <div className="detail-card">
-              <h4>Last Updated</h4>
-              <p>{item.details?.lastUpdated || 'Not specified'}</p>
+          <div className="item-details-section">
+            <h3>Details</h3>
+            <div className="details-grid">
+              {Object.entries(item.details || {}).map(([key, value]) => (
+                <div key={key} className="detail-item">
+                  <span className="detail-label">{key}:</span>
+                  <span className="detail-value">{value}</span>
+                </div>
+              ))}
             </div>
           </div>
           
           <div className="item-actions">
             <button className="action-btn primary">
-              <i className="fas fa-edit"></i> Edit Item
+              <i className="fas fa-edit"></i> Edit
+            </button>
+            <button className="action-btn danger">
+              <i className="fas fa-trash"></i> Delete
             </button>
             <button className="action-btn secondary">
-              <i className="fas fa-trash"></i> Delete Item
-            </button>
-            <button className="action-btn outline">
               <i className="fas fa-share"></i> Share
             </button>
           </div>

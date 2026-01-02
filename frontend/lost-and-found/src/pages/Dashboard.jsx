@@ -9,7 +9,7 @@ const Dashboard = () => {
       <Sidebar />
       
       <div className="main">
-        <Header />
+        <Header title="Lost & found" />
         
         <main className="content">
           <SimpleMap />

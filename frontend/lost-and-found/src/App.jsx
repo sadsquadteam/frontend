@@ -13,21 +13,19 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Dashboard route */}
+        {/* Dashboard with Map */}
+        <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         
-        {/* Items routes */}
+        {/* Items Pages with Same Layout */}
         <Route path="/items" element={<ItemsPage />} />
         <Route path="/items/:id" element={<ItemDetailPage />} />
         
-        {/* Register route */}
+        {/* Register Page (Full Page) */}
         <Route path="/register" element={<Register />} />
         
-        {/* Redirect root to dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-        {/* 404 redirect */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* 404 redirect to dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

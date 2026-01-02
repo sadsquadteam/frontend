@@ -3,33 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import ItemCard from './ItemCard';
 import '../../styles/items.css';
 
-// Sample data - replace with your actual data source
+// Sample data
 const sampleItems = [
-  { id: 1, title: 'JavaScript', description: 'JavaScript programming concepts and examples', icon: 'fab fa-js-square', category: 'JS' },
-  { id: 2, title: 'React', description: 'React components and hooks tutorials', icon: 'fab fa-react', category: 'React' },
-  { id: 3, title: 'Node.js', description: 'Backend development with Node.js', icon: 'fab fa-node-js', category: 'Node' },
-  { id: 4, title: 'CSS3', description: 'Modern CSS techniques and animations', icon: 'fab fa-css3-alt', category: 'CSS' },
-  { id: 5, title: 'HTML5', description: 'Semantic HTML and web standards', icon: 'fab fa-html5', category: 'HTML' },
-  { id: 6, title: 'Python', description: 'Python programming and data science', icon: 'fab fa-python', category: 'Python' },
-  { id: 7, title: 'Database', description: 'Database design and management', icon: 'fas fa-database', category: 'DB' },
-  { id: 8, title: 'API', description: 'REST API design and development', icon: 'fas fa-server', category: 'API' },
-  { id: 9, title: 'Mobile', description: 'Mobile app development', icon: 'fas fa-mobile-alt', category: 'Mobile' },
-  { id: 10, title: 'Cloud', description: 'Cloud services and deployment', icon: 'fas fa-cloud', category: 'Cloud' },
-  { id: 11, title: 'Security', description: 'Web security best practices', icon: 'fas fa-shield-alt', category: 'Security' },
-  { id: 12, title: 'DevOps', description: 'Development and operations', icon: 'fas fa-code-branch', category: 'DevOps' },
+  { id: 1, title: 'Item 1', description: 'Description for item 1', icon: 'fas fa-code', category: 'Code' },
+  { id: 2, title: 'Item 2', description: 'Description for item 2', icon: 'fab fa-css3-alt', category: 'CSS' },
+  { id: 3, title: 'Item 3', description: 'Description for item 3', icon: 'fab fa-html5', category: 'HTML' },
+  { id: 4, title: 'Item 4', description: 'Description for item 4', icon: 'fab fa-js-square', category: 'JS' },
+  { id: 5, title: 'Item 5', description: 'Description for item 5', icon: 'fas fa-box', category: 'Box' },
+  { id: 6, title: 'Item 6', description: 'Description for item 6', icon: 'fas fa-cube', category: 'Cube' },
+  { id: 7, title: 'Item 7', description: 'Description for item 7', icon: 'fas fa-database', category: 'DB' },
+  { id: 8, title: 'Item 8', description: 'Description for item 8', icon: 'fas fa-server', category: 'Server' },
+  { id: 9, title: 'Item 9', description: 'Description for item 9', icon: 'fas fa-cloud', category: 'Cloud' },
+  { id: 10, title: 'Item 10', description: 'Description for item 10', icon: 'fas fa-mobile-alt', category: 'Mobile' },
+  { id: 11, title: 'Item 11', description: 'Description for item 11', icon: 'fas fa-shield-alt', category: 'Security' },
+  { id: 12, title: 'Item 12', description: 'Description for item 12', icon: 'fas fa-code-branch', category: 'DevOps' },
 ];
 
 const ItemsGrid = () => {
   const navigate = useNavigate();
   
   const handleAddNewItem = () => {
-    navigate('/register'); // Or create a separate add item page
+    navigate('/register');
   };
   
   return (
-    <div className="items-container">
+    <div className="items-grid-container">
       <div className="items-header">
-        <h1 className="items-title">All Items</h1>
+        <h1 className="items-title">Items Management</h1>
         <button 
           className="add-item-btn"
           onClick={handleAddNewItem}
