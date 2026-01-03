@@ -1,0 +1,24 @@
+# Name for your workflow
+name: Simple Mock CI
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# A workflow is made up of one or more jobs
+jobs:
+  # A single job that does nothing but report success
+  mock-success-check:
+    # The type of virtual machine the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks
+    steps:
+      # This is the only step. It prints a message and immediately succeeds.
+      # It requires no code checkout, no dependency installation, and is instant.
+      - name: Report Success
+        run: echo "✅ CI check passed successfully (mocked)"
+
