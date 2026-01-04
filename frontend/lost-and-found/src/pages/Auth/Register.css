@@ -314,7 +314,7 @@ body {
     100% { opacity: 1; transform: translateX(-430px); }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1400px) {
     .left-panel {
         width: 400px;
         min-width: 400px;
