@@ -151,22 +151,23 @@ body {
 
 /* Slower box animations */
 .box-animation img:nth-child(1) {
-    animation: showFrame 1.6s forwards;
+    animation: showFrame 3.5s forwards;
+    animation-delay: 0;
 }
 
 .box-animation img:nth-child(2) {
-    animation: showFrame 1.6s forwards;
-    animation-delay: 1.6s;
+    animation: showFrame 0.2s forwards;
+    animation-delay: 3.5s; 
 }
 
 .box-animation img:nth-child(3) {
-    animation: showFrame 1.6s forwards;
-    animation-delay: 3.2s;
+    animation: showFrame 0.2s forwards;
+    animation-delay: 3.7s; 
 }
 
 .box-animation img:nth-child(4) {
     animation: showFinal 1.6s forwards;
-    animation-delay: 4.8s;
+    animation-delay: 3.9s; 
 }
 
 @keyframes showFrame {
@@ -249,68 +250,68 @@ body {
 @keyframes girlWalk1 {
     0%   { opacity: 0; transform: translateX(500px); }
     10%  { opacity: 1; transform: translateX(500px); }
-    90%  { opacity: 1; transform: translateX(407px); }
-    100% { opacity: 0; transform: translateX(407px); }
+    90%  { opacity: 1; transform: translateX(350px); }
+    100% { opacity: 0; transform: translateX(350px); }
 }
 
 @keyframes girlWalk2 {
-    0%   { opacity: 0; transform: translateX(407px); }
-    10%  { opacity: 1; transform: translateX(407px); }
-    90%  { opacity: 1; transform: translateX(314px); }
-    100% { opacity: 0; transform: translateX(314px); }
+    0%   { opacity: 0; transform: translateX(350px); }
+    10%  { opacity: 1; transform: translateX(350px); }
+    90%  { opacity: 1; transform: translateX(200px); }
+    100% { opacity: 0; transform: translateX(200px); }
 }
 
 @keyframes girlWalk3 {
-    0%   { opacity: 0; transform: translateX(314px); }
-    10%  { opacity: 1; transform: translateX(314px); }
-    90%  { opacity: 1; transform: translateX(221px); }
-    100% { opacity: 0; transform: translateX(221px); }
+    0%   { opacity: 0; transform: translateX(200px); }
+    10%  { opacity: 1; transform: translateX(200px); }
+    90%  { opacity: 1; transform: translateX(50px); }
+    100% { opacity: 0; transform: translateX(50px); }
 }
 
 @keyframes girlWalk4 {
-    0%   { opacity: 0; transform: translateX(221px); }
-    10%  { opacity: 1; transform: translateX(221px); }
-    90%  { opacity: 1; transform: translateX(128px); }
-    100% { opacity: 0; transform: translateX(128px); }
+    0%   { opacity: 0; transform: translateX(50px); }
+    10%  { opacity: 1; transform: translateX(50px); }
+    90%  { opacity: 1; transform: translateX(-100px); }
+    100% { opacity: 0; transform: translateX(-100px); }
 }
 
 @keyframes girlWalk5 {
-    0%   { opacity: 0; transform: translateX(128px); }
-    10%  { opacity: 1; transform: translateX(128px); }
-    90%  { opacity: 1; transform: translateX(35px); }
-    100% { opacity: 0; transform: translateX(35px); }
+    0%   { opacity: 0; transform: translateX(-100px); }
+    10%  { opacity: 1; transform: translateX(-100px); }
+    90%  { opacity: 1; transform: translateX(-250px); }
+    100% { opacity: 0; transform: translateX(-250px); }
 }
 
 @keyframes girlWalk6 {
-    0%   { opacity: 0; transform: translateX(35px); }
-    10%  { opacity: 1; transform: translateX(35px); }
-    90%  { opacity: 1; transform: translateX(-58px); }
-    100% { opacity: 0; transform: translateX(-58px); }
+    0%   { opacity: 0; transform: translateX(-250px); }
+    10%  { opacity: 1; transform: translateX(-250px); }
+    90%  { opacity: 1; transform: translateX(-340px); }
+    100% { opacity: 0; transform: translateX(-340px); }
 }
 
 @keyframes girlWalk7 {
-    0%   { opacity: 0; transform: translateX(-58px); }
-    10%  { opacity: 1; transform: translateX(-58px); }
-    90%  { opacity: 1; transform: translateX(-151px); }
-    100% { opacity: 0; transform: translateX(-151px); }
+    0%   { opacity: 0; transform: translateX(-340px); }
+    10%  { opacity: 1; transform: translateX(-340px); }
+    90%  { opacity: 1; transform: translateX(-380px); }
+    100% { opacity: 0; transform: translateX(-380px); }
 }
 
 @keyframes girlWalk8 {
-    0%   { opacity: 0; transform: translateX(-151px); }
-    10%  { opacity: 1; transform: translateX(-151px); }
-    90%  { opacity: 1; transform: translateX(-244px); }
-    100% { opacity: 0; transform: translateX(-244px); }
+    0%   { opacity: 0; transform: translateX(-380px); }
+    10%  { opacity: 1; transform: translateX(-380px); }
+    90%  { opacity: 1; transform: translateX(-410px); }
+    100% { opacity: 0; transform: translateX(-410px); }
 }
 
 @keyframes girlWalk9 {
-    0%   { opacity: 0; transform: translateX(-244px); }
-    10%  { opacity: 1; transform: translateX(-244px); }
-    90%  { opacity: 1; transform: translateX(-337px); }
-    100% { opacity: 0; transform: translateX(-337px); }
+    0%   { opacity: 0; transform: translateX(-410px); }
+    10%  { opacity: 1; transform: translateX(-410px); }
+    90%  { opacity: 1; transform: translateX(-425px); }
+    100% { opacity: 0; transform: translateX(-425px); }
 }
 
 @keyframes girlWalkFinal {
-    0%   { opacity: 0; transform: translateX(-337px); }
+    0%   { opacity: 0; transform: translateX(-425px); }
     100% { opacity: 1; transform: translateX(-430px); }
 }
 
