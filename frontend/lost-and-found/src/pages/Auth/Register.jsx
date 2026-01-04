@@ -1,7 +1,11 @@
 import { useState } from "react";
 import "./Register.css";
 import logo from "../../assets/images/logo-text.svg";
-import box from "../../assets/images/box.svg";
+// import box from "../../assets/images/box.svg";
+import box1 from "../../assets/images/box/box-1.svg";
+import box2 from "../../assets/images/box/box-2.svg";
+import box3 from "../../assets/images/box/box-3.svg";
+import box4 from "../../assets/images/box/box-4.svg";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -122,7 +126,13 @@ const Register = () => {
             </div>
 
             <div className="right-panel">
-                <img src={box} alt="Lost & Found Box" className="box-img" />
+                {/* <img src={box} alt="Lost & Found Box" className="box-img" /> */}
+                <div className="box-animation">
+                    <img src={box1} alt="" />
+                    <img src={box2} alt="" />
+                    <img src={box3} alt="" />
+                    <img src={box4} alt="" />
+                </div>
             </div>
 
         </div>
