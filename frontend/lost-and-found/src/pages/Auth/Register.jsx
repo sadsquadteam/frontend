@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Register.css";
 import logo from "../../assets/images/logo-text.svg";
 // import box from "../../assets/images/box.svg";
@@ -23,6 +24,8 @@ const girlFrames = [
 
 
 const Register = () => {
+    const navigate = useNavigate();
+    
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -83,7 +86,12 @@ const Register = () => {
 
         console.log("Register data:", formData);
 
-        // 🔜 Send to backend here
+
+        const user = { email: formData.email };
+        
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        navigate("/dashboard", { state: { user } });
     };
 
     return (
