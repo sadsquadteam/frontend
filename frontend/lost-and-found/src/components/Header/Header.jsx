@@ -1,21 +1,39 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchBar from './SearchBar';
 import { Button } from '../UI';
-import { ICONS } from '../../styles/icons';
+import './Header.css';
 
-const Header = ({ title = "Lost&Found", children }) => {
+const Header = ({ title = "Lost&Found", children, isAuthenticated = false, user = null }) => {
   const navigate = useNavigate();
-  const SlidersIcon = ICONS.SLIDERS;
-  const PlusIcon = ICONS.PLUS;
-  
+
+  // Guest header (when not authenticated)
+  if (!isAuthenticated) {
+    return (
+      <header className="header header--guest">
+        <div className="header-right">
+          <span
+            className="signup-text"
+            onClick={() => navigate("/register")}
+          >
+            Sign up
+          </span>
+
+          <button
+            className="login-btn"
+            onClick={() => navigate("/login")}
+          >
+            Log in
+          </button>
+        </div>
+      </header>
+    );
+  }
+
+  // Authenticated header (main app view)
   const handleAddNewClick = () => {
-    navigate('/register');
+    navigate('/add-item'); // Changed from '/register' to '/add-item'
   };
   
-  const handleCustomizeClick = () => {
-    console.log('Customize clicked');
-  };
 
   let headerContent;
   
@@ -28,19 +46,11 @@ const Header = ({ title = "Lost&Found", children }) => {
 
   return (
     <header className="header">
-      {headerContent} {/* Render either logo or title */}
       
-      <div className="spacer" />
-      
-      <SearchBar />
-      
-      <Button icon={SlidersIcon} onClick={handleCustomizeClick}>
-        Customize
+      <Button variant="accent" onClick={handleAddNewClick}>
+        Add new item
       </Button>
       
-      <Button variant="accent" icon={PlusIcon} onClick={handleAddNewClick}>
-        Add New
-      </Button>
     </header>
   );
 };
