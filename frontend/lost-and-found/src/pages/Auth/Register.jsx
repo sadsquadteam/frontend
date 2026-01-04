@@ -6,6 +6,21 @@ import box1 from "../../assets/images/box/box-1.svg";
 import box2 from "../../assets/images/box/box-2.svg";
 import box3 from "../../assets/images/box/box-3.svg";
 import box4 from "../../assets/images/box/box-4.svg";
+import girl1 from "../../assets/images/girl/girl-1.svg";
+import girl2 from "../../assets/images/girl/girl-2.svg";
+import girl3 from "../../assets/images/girl/girl-3.svg";
+import girl4 from "../../assets/images/girl/girl-4.svg";
+import girl5 from "../../assets/images/girl/girl-5.svg";
+import girl6 from "../../assets/images/girl/girl-6.svg";
+import girl7 from "../../assets/images/girl/girl-7.svg";
+import girl8 from "../../assets/images/girl/girl-8.svg";
+import girl9 from "../../assets/images/girl/girl-9.svg";
+import girl10 from "../../assets/images/girl/girl-10.svg";
+
+const girlFrames = [
+  girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10
+];
+
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -126,6 +141,11 @@ const Register = () => {
             </div>
 
             <div className="right-panel">
+                <div className="girl-animation">
+                    {girlFrames.map((frame, index) => (
+                        <img key={index} src={frame} alt="" className="girl-frame" />
+                    ))}
+                </div>
                 {/* <img src={box} alt="Lost & Found Box" className="box-img" /> */}
                 <div className="box-animation">
                     <img src={box1} alt="" />

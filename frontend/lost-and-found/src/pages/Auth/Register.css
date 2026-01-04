@@ -16,11 +16,12 @@ body {
     width: 100vw;
     height: 100vh;
     min-width: 100%;
-    position:absolute;
+    position: absolute;
     left: 0;
     top: 0;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 /* LEFT PANEL */
@@ -38,12 +39,14 @@ body {
     justify-content: start; 
     align-items: start;     
     text-align: start;
+    z-index: 10;
 }
 
 .logo {
     width: 200px;
     margin-bottom: 40px;
     padding: 0;
+    max-width: 100%;
 }
 
 .left-panel h2 {
@@ -117,6 +120,9 @@ body {
 .right-panel {
     flex: 1;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 0;
 }
 
@@ -141,31 +147,27 @@ body {
     inset: 0;
     width: 100%;
     opacity: 0;
-    animation-timing-function: ease-in-out;
 }
 
-
-/* slower */
+/* Slower box animations */
 .box-animation img:nth-child(1) {
-    animation: showFrame 1.2s forwards;
+    animation: showFrame 1.6s forwards;
 }
 
 .box-animation img:nth-child(2) {
-    animation: showFrame 1.2s forwards ease-in-out;
-    animation-delay: 1.2s;
+    animation: showFrame 1.6s forwards;
+    animation-delay: 1.6s;
 }
 
 .box-animation img:nth-child(3) {
-    animation: showFrame 1.2s forwards ease-in-out;
-    animation-delay: 2.4s;
+    animation: showFrame 1.6s forwards;
+    animation-delay: 3.2s;
 }
 
 .box-animation img:nth-child(4) {
-    animation: showFinal 1.2s forwards;
-    animation-delay: 3.6s;
+    animation: showFinal 1.6s forwards;
+    animation-delay: 4.8s;
 }
-
-
 
 @keyframes showFrame {
     0%   { opacity: 0; }
@@ -179,4 +181,269 @@ body {
     to   { opacity: 1; }
 }
 
+/* GIRL ANIMATION - UPDATED */
+.girl-animation {
+    position: absolute;
+    width: 200px;   
+    height: 300px;   
+    /* Position at right side initially */
+    right: -200px; /* Start off-screen on the right */
+    /* Disable default positioning for children */
+    position: relative;
+}
 
+.girl-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;      
+    object-fit: contain; 
+    opacity: 0;
+    top: 200px;
+    animation-timing-function: ease-in-out;
+    transform: translateX(0);
+}
+
+.girl-frame:nth-child(1) { 
+    animation: girlWalk1 0.6s forwards; 
+    animation-delay: 0s; 
+}
+.girl-frame:nth-child(2) { 
+    animation: girlWalk2 0.6s forwards; 
+    animation-delay: 0.6s; 
+}
+.girl-frame:nth-child(3) { 
+    animation: girlWalk3 0.6s forwards; 
+    animation-delay: 1.2s; 
+}
+.girl-frame:nth-child(4) { 
+    animation: girlWalk4 0.6s forwards; 
+    animation-delay: 1.8s; 
+}
+.girl-frame:nth-child(5) { 
+    animation: girlWalk5 0.6s forwards; 
+    animation-delay: 2.4s; 
+}
+.girl-frame:nth-child(6) { 
+    animation: girlWalk6 0.6s forwards; 
+    animation-delay: 3.0s; 
+}
+.girl-frame:nth-child(7) { 
+    animation: girlWalk7 0.6s forwards; 
+    animation-delay: 3.6s; 
+}
+.girl-frame:nth-child(8) { 
+    animation: girlWalk8 0.6s forwards; 
+    animation-delay: 4.2s; 
+}
+.girl-frame:nth-child(9) { 
+    animation: girlWalk9 0.6s forwards; 
+    animation-delay: 4.8s; 
+}
+.girl-frame:nth-child(10) { 
+    animation: girlWalkFinal 0.8s forwards; 
+    animation-delay: 5.4s; 
+}
+
+/* Animation keyframes for each step - each starts further to the right */
+@keyframes girlWalk1 {
+    0%   { opacity: 0; transform: translateX(500px); }
+    10%  { opacity: 1; transform: translateX(500px); }
+    90%  { opacity: 1; transform: translateX(407px); }
+    100% { opacity: 0; transform: translateX(407px); }
+}
+
+@keyframes girlWalk2 {
+    0%   { opacity: 0; transform: translateX(407px); }
+    10%  { opacity: 1; transform: translateX(407px); }
+    90%  { opacity: 1; transform: translateX(314px); }
+    100% { opacity: 0; transform: translateX(314px); }
+}
+
+@keyframes girlWalk3 {
+    0%   { opacity: 0; transform: translateX(314px); }
+    10%  { opacity: 1; transform: translateX(314px); }
+    90%  { opacity: 1; transform: translateX(221px); }
+    100% { opacity: 0; transform: translateX(221px); }
+}
+
+@keyframes girlWalk4 {
+    0%   { opacity: 0; transform: translateX(221px); }
+    10%  { opacity: 1; transform: translateX(221px); }
+    90%  { opacity: 1; transform: translateX(128px); }
+    100% { opacity: 0; transform: translateX(128px); }
+}
+
+@keyframes girlWalk5 {
+    0%   { opacity: 0; transform: translateX(128px); }
+    10%  { opacity: 1; transform: translateX(128px); }
+    90%  { opacity: 1; transform: translateX(35px); }
+    100% { opacity: 0; transform: translateX(35px); }
+}
+
+@keyframes girlWalk6 {
+    0%   { opacity: 0; transform: translateX(35px); }
+    10%  { opacity: 1; transform: translateX(35px); }
+    90%  { opacity: 1; transform: translateX(-58px); }
+    100% { opacity: 0; transform: translateX(-58px); }
+}
+
+@keyframes girlWalk7 {
+    0%   { opacity: 0; transform: translateX(-58px); }
+    10%  { opacity: 1; transform: translateX(-58px); }
+    90%  { opacity: 1; transform: translateX(-151px); }
+    100% { opacity: 0; transform: translateX(-151px); }
+}
+
+@keyframes girlWalk8 {
+    0%   { opacity: 0; transform: translateX(-151px); }
+    10%  { opacity: 1; transform: translateX(-151px); }
+    90%  { opacity: 1; transform: translateX(-244px); }
+    100% { opacity: 0; transform: translateX(-244px); }
+}
+
+@keyframes girlWalk9 {
+    0%   { opacity: 0; transform: translateX(-244px); }
+    10%  { opacity: 1; transform: translateX(-244px); }
+    90%  { opacity: 1; transform: translateX(-337px); }
+    100% { opacity: 0; transform: translateX(-337px); }
+}
+
+@keyframes girlWalkFinal {
+    0%   { opacity: 0; transform: translateX(-337px); }
+    100% { opacity: 1; transform: translateX(-430px); }
+}
+
+@media screen and (max-width: 1024px) {
+    .left-panel {
+        width: 400px;
+        min-width: 400px;
+        padding: 60px 30px;
+    }
+    
+    .box-img,
+    .box-animation {
+        width: 200px;
+        left: 100px;
+    }
+    
+    .box-animation {
+        bottom: 250px;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .left-panel {
+        width: 350px;
+        min-width: 350px;
+        padding: 50px 25px;
+    }
+    
+    .box-img,
+    .box-animation {
+        width: 180px;
+        left: 80px;
+    }
+    
+    .box-animation {
+        bottom: 220px;
+    }
+    
+    .girl-animation {
+        width: 150px;
+        height: 250px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    
+    .left-panel {
+        width: 100%;
+        min-width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        padding: 40px 25px;
+        justify-content: center;
+    }
+    
+    .logo {
+        width: 180px;
+        margin-bottom: 30px;
+    }
+    
+    .left-panel h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form input {
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+    
+    .form button {
+        padding: 14px;
+        margin-top: 30px;
+    }
+    
+    .right-panel {
+        display: none;
+    }
+    
+    .box-img,
+    .box-animation,
+    .girl-animation {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .left-panel {
+        padding: 30px 20px;
+    }
+    
+    .logo {
+        width: 150px;
+        margin-bottom: 25px;
+    }
+    
+    .left-panel h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    
+    .form input {
+        padding: 12px 16px;
+        font-size: 16px; 
+    }
+    
+    .form button {
+        padding: 14px;
+        font-size: 16px;
+    }
+    
+    .signin {
+        font-size: 13px;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .left-panel {
+        width: 600px;
+        min-width: 600px;
+        padding: 120px 60px;
+    }
+    
+    .logo {
+        width: 250px;
+        margin-bottom: 60px;
+    }
+    
+    .left-panel h2 {
+        font-size: 28px;
+    }
+}
