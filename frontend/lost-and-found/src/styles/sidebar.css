@@ -65,11 +65,50 @@
   background: rgba(237, 246, 255, 0.16);
 }
 
-.avatar {
+
+
+.logout-btn {
   margin-top: auto;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: url("https://i.pravatar.cc/100") center/cover;
+  background: var(--lily-white); 
+  border: 2px solid var(--lily-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.logout-btn:hover {
+  background: var(--lily-white); 
+  border-color: var(--lily-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+  filter: brightness(0) saturate(100%); 
+}
+
+.logout-btn:hover img {
+  transform: rotate(180deg);
+}
+
+.logout-btn.subtle {
+  background: var(--lily-white);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
