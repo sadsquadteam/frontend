@@ -34,6 +34,9 @@ export default function App() {
 
         {/* Login Page (Full Page) */}
         <Route path="/login" element={<Login />} />
+
+        {/* Logout route (optional) */}
+        <Route path="/logout" element={<Navigate to="/dashboard" replace />} />
         {/* 404 redirect to dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

@@ -17,7 +17,7 @@ import girl8 from "../../assets/images/girl2/girl-8.svg";
 import girl9 from "../../assets/images/girl2/girl-9.svg";
 import girl10 from "../../assets/images/girl2/girl-10.svg";
 import girl11 from "../../assets/images/girl2/girl-11.svg";
-import logOut from '../../assets/images/logOut.svg'; 
+import profile from '../../assets/images/Profile.svg'; 
 import open_eye from '../../assets/images/Open-eye.svg';
 import closed_eye from '../../assets/images/Closed-eye.svg';
 
@@ -69,6 +69,18 @@ const Login = () => {
 
     console.log("Login data:", formData);
     // 🔜 send to backend
+
+    // Simulate successful login
+  const user = { 
+    email: formData.email,
+    // Add other user properties as needed
+  };
+  
+  // Save user to localStorage
+  localStorage.setItem('user', JSON.stringify(user));
+  
+  // Navigate to dashboard
+  navigate("/dashboard", { state: { user } });
   };
 
   return (
@@ -91,7 +103,7 @@ const Login = () => {
                   onChange={handleChange}
                   className={errors.email ? "input-error" : ""}
               />
-              <img src={logOut} alt="logout" className="input-icon" />
+              <img src={profile} alt="profile" className="input-icon" />
           </div>
           {errors.email && <span className="error">{errors.email}</span>}
 

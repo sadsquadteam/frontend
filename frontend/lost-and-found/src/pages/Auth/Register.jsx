@@ -18,7 +18,7 @@ import girl7 from "../../assets/images/girl/girl-7.svg";
 import girl8 from "../../assets/images/girl/girl-8.svg";
 import girl9 from "../../assets/images/girl/girl-9.svg";
 import girl10 from "../../assets/images/girl/girl-10.svg";
-import logOut from '../../assets/images/logOut.svg'; 
+import profile from '../../assets/images/Profile.svg'; 
 import open_eye from '../../assets/images/Open-eye.svg';
 import closed_eye from '../../assets/images/Closed-eye.svg';
 
@@ -189,6 +189,7 @@ const Register = () => {
         if (otpString.length === 6) {
             const user = { email: formData.email };
             localStorage.setItem('user', JSON.stringify(user));
+            setShowOtpPopup(false);
             navigate("/dashboard", { state: { user } });
         } else {
             setOtpError("Invalid verification code");
@@ -220,7 +221,7 @@ const Register = () => {
                             onChange={handleChange}
                             className={errors.email ? "input-error" : ""}
                         />
-                        <img src={logOut} alt="logout" className="input-icon" />
+                        <img src={profile} alt="profile" className="input-icon" />
                     </div>
                     {errors.email && <span className="error">{errors.email}</span>}
 
