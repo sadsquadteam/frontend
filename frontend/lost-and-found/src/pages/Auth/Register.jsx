@@ -21,6 +21,7 @@ import girl10 from "../../assets/images/girl/girl-10.svg";
 import profile from '../../assets/images/Profile.svg'; 
 import open_eye from '../../assets/images/Open-eye.svg';
 import closed_eye from '../../assets/images/Closed-eye.svg';
+import { authAPI } from "../../services/api";
 
 const girlFrames = [
   girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10
@@ -39,10 +40,11 @@ const Register = () => {
     const [showOtpPopup, setShowOtpPopup] = useState(false);
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [otpError, setOtpError] = useState("");
-    const [setIsOtpSent] = useState(false);
+    const [isOtpSent, setIsOtpSent] = useState(false); // Changed from setIsOtpSent to isOtpSent
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState(""); // For general API errors
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,6 +57,9 @@ const Register = () => {
             ...prev,
             [name]: ""
         }));
+        
+        // Clear API error when user starts typing
+        if (apiError) setApiError("");
     };
 
     const validate = () => {
@@ -62,10 +67,16 @@ const Register = () => {
 
         if (!formData.email) {
             newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Email is invalid";
         }
 
         if (!formData.password) {
             newErrors.password = "Password is required";
+        } else if (formData.password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters";
+        } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(formData.password)) {
+            newErrors.password = "Password must contain uppercase, lowercase, number, and special character (!@#$%^&*)";
         }
 
         if (!formData.confirmPassword) {
@@ -83,8 +94,9 @@ const Register = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setApiError("");
 
         const validationErrors = validate();
 
@@ -93,16 +105,27 @@ const Register = () => {
             return;
         }
 
-        console.log("Register data:", formData);
-        
-        setShowOtpPopup(true);
-        simulateSendOtp();
-    };
+        setLoading(true);
 
-    const simulateSendOtp = () => {
-        setIsOtpSent(true);
-        console.log(`OTP sent to: ${formData.email}`);
-        // API call here
+        try {
+            // Step 1: Send email to backend to get OTP
+            await authAPI.registerStep1(formData.email);
+            
+            // Show OTP popup
+            setShowOtpPopup(true);
+            setIsOtpSent(true);
+            
+            // Focus on first OTP input
+            setTimeout(() => {
+                const firstInput = document.getElementById("otp-0");
+                if (firstInput) firstInput.focus();
+            }, 100);
+
+        } catch (error) {
+            setApiError(error.message || "Failed to send verification code. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleOtpChange = (index, value) => {
@@ -111,13 +134,12 @@ const Register = () => {
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
+        setOtpError("");
         
         if (value && index < 5) {
             const nextInput = document.getElementById(`otp-${index + 1}`);
             if (nextInput) nextInput.focus();
         }
-        
-        setOtpError("");
         
         // Auto-submit when all 6 digits are entered
         if (newOtp.every(digit => digit !== "") && index === 5) {
@@ -129,12 +151,6 @@ const Register = () => {
         if (e.key === "Backspace" && !otp[index] && index > 0) {
             const prevInput = document.getElementById(`otp-${index - 1}`);
             if (prevInput) prevInput.focus();
-        }
-        
-        // Allow pasting OTP
-        if (e.key === "v" && (e.ctrlKey || e.metaKey)) {
-            e.preventDefault();
-            // Handle paste will be done in onPaste event
         }
     };
 
@@ -153,6 +169,7 @@ const Register = () => {
             });
             
             setOtp(newOtp);
+            setOtpError("");
             
             const lastFilledIndex = Math.min(digits.length - 1, 5);
             const lastInput = document.getElementById(`otp-${lastFilledIndex}`);
@@ -165,18 +182,25 @@ const Register = () => {
         }
     };
 
-    const handleResendOtp = () => {
+    const handleResendOtp = async () => {
         setOtp(["", "", "", "", "", ""]);
         setOtpError("");
-        simulateSendOtp();
         
-        setTimeout(() => {
-            const firstInput = document.getElementById("otp-0");
-            if (firstInput) firstInput.focus();
-        }, 100);
+        try {
+            await authAPI.registerStep1(formData.email);
+            
+            // Focus on first input
+            setTimeout(() => {
+                const firstInput = document.getElementById("otp-0");
+                if (firstInput) firstInput.focus();
+            }, 100);
+            
+        } catch (error) {
+            setOtpError("Failed to resend OTP. Please try again.");
+        }
     };
 
-    const verifyOtp = () => {
+    const verifyOtp = async () => {
         const otpString = otp.join("");
         
         if (otpString.length !== 6) {
@@ -184,15 +208,35 @@ const Register = () => {
             return;
         }
 
-        console.log("Verifying OTP:", otpString);
-        
-        if (otpString.length === 6) {
-            const user = { email: formData.email };
-            localStorage.setItem('user', JSON.stringify(user));
-            setShowOtpPopup(false);
-            navigate("/dashboard", { state: { user } });
-        } else {
-            setOtpError("Invalid verification code");
+        setLoading(true);
+        setOtpError("");
+
+        try {
+            // Step 2: Verify OTP and set password
+            const response = await authAPI.registerStep2(
+                formData.email,
+                otpString,
+                formData.password
+            );
+
+            // Store user data
+            const userData = {
+                email: formData.email,
+                id: response.user.id,
+                is_verified: response.user.is_verified,
+                is_staff: response.user.is_staff,
+                created_at: response.user.created_at
+            };
+            
+            localStorage.setItem('user', JSON.stringify(userData));
+            
+            // Navigate to dashboard
+            navigate("/dashboard", { state: { user: userData } });
+            
+        } catch (error) {
+            setOtpError(error.message || "Invalid verification code. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -210,6 +254,8 @@ const Register = () => {
 
                 <h2>Register</h2>
 
+                {apiError && <div className="error api-error">{apiError}</div>}
+
                 <form className="form" onSubmit={handleSubmit} noValidate>
                     <label>Email Address</label>
                     <div className="input-wrapper">
@@ -220,6 +266,7 @@ const Register = () => {
                             value={formData.email}
                             onChange={handleChange}
                             className={errors.email ? "input-error" : ""}
+                            disabled={loading}
                         />
                         <img src={profile} alt="profile" className="input-icon" />
                     </div>
@@ -234,6 +281,7 @@ const Register = () => {
                             value={formData.password}
                             onChange={handleChange}
                             className={errors.password ? "input-error" : ""}
+                            disabled={loading}
                         />
                         <img
                             src={showPassword ? closed_eye : open_eye}
@@ -253,6 +301,7 @@ const Register = () => {
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             className={errors.confirmPassword ? "input-error" : ""}
+                            disabled={loading}
                         />
                         <img
                             src={showConfirmPassword ? closed_eye : open_eye}
@@ -265,7 +314,9 @@ const Register = () => {
                         <span className="error">{errors.confirmPassword}</span>
                     )}
 
-                    <button type="submit">Sign Up</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Sending..." : "Sign Up"}
+                    </button>
 
                     <p className="signin">
                         Already have an account? <a href="/login">Sign in</a>
@@ -294,6 +345,7 @@ const Register = () => {
                             className="otp-back-btn"
                             onClick={closeOtpPopup}
                             aria-label="Go back"
+                            disabled={loading}
                         >
                             &lt;
                         </button>
@@ -309,6 +361,7 @@ const Register = () => {
                             <h3>Enter verification code</h3>
                             <p>A verification code has been sent to:</p>
                             <p className="otp-email">{formData.email}</p>
+                            {!isOtpSent && <p className="otp-sending">Sending code...</p>}
                         </div>
 
                         <div 
@@ -328,6 +381,7 @@ const Register = () => {
                                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
                                     className="otp-input"
                                     autoFocus={index === 0}
+                                    disabled={loading}
                                 />
                             ))}
                         </div>
@@ -340,8 +394,9 @@ const Register = () => {
                                 type="button" 
                                 className="resend-btn"
                                 onClick={handleResendOtp}
+                                disabled={loading}
                             >
-                                Resend
+                                {loading ? "Sending..." : "Resend"}
                             </button>
                         </div>
 
@@ -350,8 +405,9 @@ const Register = () => {
                                 type="button" 
                                 className="otp-continue"
                                 onClick={verifyOtp}
+                                disabled={loading || otp.some(digit => digit === "")}
                             >
-                                Continue
+                                {loading ? "Verifying..." : "Continue"}
                             </button>
                         </div>
                     </div>
