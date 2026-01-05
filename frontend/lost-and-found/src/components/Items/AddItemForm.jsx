@@ -45,11 +45,20 @@ const AddItemForm = () => {
     'Sports', 'Personal care', 'Other'
   ];
 
-  const iconOptions = [
-    '🎒 Bag', '👕 Clothing', '📱 Electronic',
-    '🧾 Card', '🔑 Key', '📚 Book',
-    '⚽ Sports', '❓ Other'
-  ];
+//  const iconOptions = [
+//   BagIcon,
+//   ClothingIcon,
+//   ElectronicsIcon,
+//   CardsIcon,
+//   KeysIcon,
+//   BooksIcon,
+//   StationaryIcon,
+//   SportsIcon,
+//   AccessoryIcon,
+//   PersonalCareIcon,
+//   OthersIcon,
+// ];
+
 
   return (
     <div className="add-item-container">
@@ -115,16 +124,6 @@ const AddItemForm = () => {
                 <option value="">Select a tag</option>
                 {tagOptions.map(tag => (
                   <option key={tag} value={tag}>{tag}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="field">
-              <label>Icons*</label>
-              <select name="icon" value={formData.icon} onChange={handleChange}>
-                <option value="">Choose an icon</option>
-                {iconOptions.map(icon => (
-                  <option key={icon} value={icon}>{icon}</option>
                 ))}
               </select>
             </div>
