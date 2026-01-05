@@ -4,9 +4,11 @@ import { Header } from '../../components/Header';
 import AddItemForm from '../../components/Items/AddItemForm';
 
 const AddItemPage = () => {
+  
   return (
     <div className="layout">
       <Sidebar />
+      
       
       <div className="main">
         <Header title="Add New Item" />

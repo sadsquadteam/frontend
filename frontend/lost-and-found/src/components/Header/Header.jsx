@@ -29,9 +29,8 @@ const Header = ({ title = "Lost&Found", children, isAuthenticated = false, user 
     );
   }
 
-  // Authenticated header (main app view)
   const handleAddNewClick = () => {
-    navigate('/add-item'); // Changed from '/register' to '/add-item'
+    navigate('/add-item',isAuthenticated, { state: { user } }); 
   };
   
 

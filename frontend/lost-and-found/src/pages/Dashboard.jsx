@@ -1,14 +1,12 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
-import { Header } from '../components/Header'; // Make sure this imports the updated Header
+import { Header } from '../components/Header';
 import { SimpleMap } from '../components/Map';
-import logoText from '../assets/images/logo-text.svg'; 
 
 const Dashboard = () => {
   const location = useLocation();
   
-  // First try to get user from navigation state, then from localStorage
   const userFromState = location.state?.user;
   let user = userFromState;
   

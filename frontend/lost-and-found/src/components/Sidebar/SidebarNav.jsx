@@ -4,7 +4,7 @@ import Location from '../../assets/images/Location.svg';
 import Category from '../../assets/images/Category.svg';
 import Chatbot from '../../assets/images/Chatbot.svg';
 
-const SidebarNav = ({ isAuthenticated = false }) => {
+const SidebarNav = ({ isAuthenticated = false , user = null}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,7 +40,7 @@ const SidebarNav = ({ isAuthenticated = false }) => {
           <button
             key={index}
             className={`sidebar-nav__item ${item.active ? 'active' : ''}`}
-            onClick={() => navigate(item.path)}
+            onClick={() => navigate(item.path, { state: { user } })}
             title={item.tooltip}
           >
             <img src={item.icon} alt={item.tooltip} />
