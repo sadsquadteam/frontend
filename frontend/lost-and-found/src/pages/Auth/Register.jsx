@@ -18,6 +18,9 @@ import girl7 from "../../assets/images/girl/girl-7.svg";
 import girl8 from "../../assets/images/girl/girl-8.svg";
 import girl9 from "../../assets/images/girl/girl-9.svg";
 import girl10 from "../../assets/images/girl/girl-10.svg";
+import profile from '../../assets/images/Profile.svg'; 
+import open_eye from '../../assets/images/Open-eye.svg';
+import closed_eye from '../../assets/images/Closed-eye.svg';
 
 const girlFrames = [
   girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10
@@ -37,6 +40,9 @@ const Register = () => {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [otpError, setOtpError] = useState("");
     const [setIsOtpSent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -205,36 +211,55 @@ const Register = () => {
 
                 <form className="form" onSubmit={handleSubmit} noValidate>
                     <label>Email Address</label>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="example@gmail.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={errors.email ? "input-error" : ""}
-                    />
+                    <div className="input-wrapper">
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="example@gmail.com"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={errors.email ? "input-error" : ""}
+                        />
+                        <img src={profile} alt="profile" className="input-icon" />
+                    </div>
                     {errors.email && <span className="error">{errors.email}</span>}
 
                     <label>Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className={errors.password ? "input-error" : ""}
-                    />
+                    <div className="input-wrapper">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={errors.password ? "input-error" : ""}
+                        />
+                        <img
+                            src={showPassword ? closed_eye : open_eye}
+                            alt="toggle password"
+                            className="input-icon clickable"
+                            onClick={() => setShowPassword(prev => !prev)}
+                        />
+                    </div>
                     {errors.password && <span className="error">{errors.password}</span>}
 
                     <label>Confirm Password</label>
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={errors.confirmPassword ? "input-error" : ""}
-                    />
+                    <div className="input-wrapper">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className={errors.confirmPassword ? "input-error" : ""}
+                        />
+                        <img
+                            src={showConfirmPassword ? closed_eye : open_eye}
+                            alt="toggle confirm password"
+                            className="input-icon clickable"
+                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                        />
+                    </div>
                     {errors.confirmPassword && (
                         <span className="error">{errors.confirmPassword}</span>
                     )}
