@@ -28,7 +28,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   z-index: 1000;
   pointer-events: auto;
 }
@@ -52,14 +51,13 @@
 .search-box input::placeholder {
   color: rgba(207, 54, 107, 0.6)
 }
-
-.search-box .icon {
+.search-box img {
+  width: 30px;
+  height: 30px;
   position: absolute;
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: #ff4f8b;
-  font-size: 18px;
 }
 
 /* Filter button */
@@ -79,12 +77,12 @@
   transition: 0.2s ease;
 }
 
-.filter-btn:hover {
-  background: #ff4f8b;
-  color: #fff;
+
+.filter-btn img {
+  width: 30px;
+  height: 30px;
 }
 
-/* Leaflet controls (اصلاح‌شده) */
 .leaflet-control {
   border-radius: 10px !important;
   box-shadow: 0 4px 12px rgba(19, 36, 64, 0.15) !important;

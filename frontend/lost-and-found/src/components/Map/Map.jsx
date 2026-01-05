@@ -1,6 +1,8 @@
 import React from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import search from '../../assets/images/Search.svg'; 
+import filter from '../../assets/images/Filter.svg';
 
 const SimpleMap = () => {
   const sharifCenter = [35.7036, 51.3515];
@@ -13,16 +15,15 @@ const SimpleMap = () => {
   return (
     <div className="map-wrapper">
 
-      {/* 🔍 Search & Filter Overlay */}
       <div className="map-toolbar">
         <div className="search-box">
           <input type="text" placeholder="Search" />
-          <span className="icon">🔍</span>
+          <img src={search} alt="Search" />
         </div>
 
         <button className="filter-btn">
           Filter by
-          <span className="filter-icon">⚙️</span>
+          <img src={filter} alt="Filter" />
         </button>
       </div>
 
