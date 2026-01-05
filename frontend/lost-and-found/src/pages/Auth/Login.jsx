@@ -17,6 +17,9 @@ import girl8 from "../../assets/images/girl2/girl-8.svg";
 import girl9 from "../../assets/images/girl2/girl-9.svg";
 import girl10 from "../../assets/images/girl2/girl-10.svg";
 import girl11 from "../../assets/images/girl2/girl-11.svg";
+import profile from '../../assets/images/Profile.svg'; 
+import open_eye from '../../assets/images/Open-eye.svg';
+import closed_eye from '../../assets/images/Closed-eye.svg';
 
 const girlFrames = [
   girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10, girl11
@@ -30,6 +33,7 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,25 +82,36 @@ const Login = () => {
         <form className="login-form" onSubmit={handleSubmit} noValidate>
 
           <label>Email Address</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="example@gmail.com"
-            value={formData.email}
-            onChange={handleChange}
-            className={errors.email ? "input-error" : ""}
-          />
+          <div className="input-wrapper">
+              <input
+                  type="email"
+                  name="email"
+                  placeholder="example@gmail.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? "input-error" : ""}
+              />
+              <img src={profile} alt="profile" className="input-icon" />
+          </div>
           {errors.email && <span className="error">{errors.email}</span>}
 
           <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className={errors.password ? "input-error" : ""}
-          />
+          <div className="input-wrapper">
+            <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className={errors.password ? "input-error" : ""}
+            />
+            <img
+                src={showPassword ? closed_eye : open_eye}
+                alt="toggle password"
+                className="input-icon clickable"
+                onClick={() => setShowPassword(prev => !prev)}
+            />
+          </div>
           {errors.password && <span className="error">{errors.password}</span>}
 
           <button type="submit">Sign In</button>
