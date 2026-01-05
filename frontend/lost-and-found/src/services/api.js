@@ -21,13 +21,52 @@ const apiRequest = async (endpoint, method = 'GET', data = null, token = null) =
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || errorData.message || `API request failed with status ${response.status}`);
+        const responseClone = response.clone();
+        // Try to parse error response
+        let responseData;
+        try {
+            responseData = await response.json();
+        } catch (parseError) {
+            // If JSON parsing fails, read as text
+            const textResponse = await responseClone.text();
+            console.log('Non-JSON response:', textResponse);
+            responseData = { detail: `Server returned non-JSON: ${textResponse.substring(0, 100)}` };
         }
         
-        return await response.json();
+        if (!response.ok) {
+            // For login endpoint, provide more specific error messages
+            if (endpoint === '/users/login/') {
+                if (response.status === 401) {
+                    throw new Error(
+                        responseData.non_field_errors?.[0] || 
+                        responseData.detail || 
+                        'Invalid email or password'
+                    );
+                } else if (response.status === 400) {
+                    // Handle validation errors
+                    const errorMessages = [];
+                    if (responseData.email) errorMessages.push(responseData.email.join(', '));
+                    if (responseData.password) errorMessages.push(responseData.password.join(', '));
+                    if (responseData.non_field_errors) errorMessages.push(responseData.non_field_errors.join(', '));
+                    
+                    throw new Error(
+                        errorMessages.join(' ') || 
+                        'Please check your input'
+                    );
+                }
+            }
+            
+            // For other endpoints
+            throw new Error(
+                responseData.detail || 
+                responseData.message || 
+                responseData.non_field_errors?.[0] ||
+                Object.values(responseData).flat().join(', ') ||
+                `API request failed with status ${response.status}`
+            );
+        }
+        
+        return responseData;
     } catch (error) {
         console.error(`API Error (${endpoint}):`, error);
         throw error;
