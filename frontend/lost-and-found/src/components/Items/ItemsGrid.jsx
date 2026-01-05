@@ -20,21 +20,12 @@ const sampleItems = [
 
 const ItemsGrid = () => {
   const navigate = useNavigate();
-  
-  const handleAddNewItem = () => {
-    navigate('/add-item'); // Changed from '/register' to '/add-item'
-  };
+
   
   return (
     <div className="items-grid-container">
       <div className="items-header">
         <h1 className="items-title">Items Management</h1>
-        <button 
-          className="add-item-btn"
-          onClick={handleAddNewItem}
-        >
-          <i className="fas fa-plus"></i> Add New Item
-        </button>
       </div>
       
       <div className="items-grid">

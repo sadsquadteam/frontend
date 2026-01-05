@@ -3,10 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../UI';
 import './Header.css';
 
-const Header = ({ title = "Lost&Found", children, isAuthenticated = false, user = null }) => {
+const Header = ({ 
+  title = "Lost&Found",
+  isAuthenticated = false, 
+  user = null 
+}) => {
   const navigate = useNavigate();
 
-  // Guest header (when not authenticated)
+  if (title === "Add New Item") {
+    return <header className="header" />;
+  }
+
+  /* ===== GUEST HEADER ===== */
   if (!isAuthenticated) {
     return (
       <header className="header header--guest">
@@ -30,26 +38,14 @@ const Header = ({ title = "Lost&Found", children, isAuthenticated = false, user 
   }
 
   const handleAddNewClick = () => {
-    navigate('/add-item',isAuthenticated, { state: { user } }); 
+    navigate('/add-item', { state: { user } });
   };
-  
-
-  let headerContent;
-  
-  // Check if children (image) is provided, otherwise use title
-  if (children) {
-    headerContent = <div className="logo-container">{children}</div>;
-  } else {
-    headerContent = <h1>{title}</h1>;
-  }
 
   return (
     <header className="header">
-      
       <Button variant="accent" onClick={handleAddNewClick}>
         Add new item
       </Button>
-      
     </header>
   );
 };

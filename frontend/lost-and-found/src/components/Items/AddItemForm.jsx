@@ -1,215 +1,162 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/addItem.css';
+import ImageIcon from '../../assets/images/Image-insert.svg';
+import MapIcon from '../../assets/images/Map.svg';
+import BackIcon from '../../assets/images/Back.svg';
+import SubmitIcon from '../../assets/images/Submit.svg';
 
 const AddItemForm = () => {
-  const navigate = useNavigate();
-  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
-    icon: 'fas fa-box',
-    status: 'active'
+    tag: '',
+    icon: '',
+    status: 'found',
+    latitude: '',
+    longitude: '',
   });
-  
-  const [errors, setErrors] = useState({});
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-    
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-    
-    if (!formData.category.trim()) {
-      newErrors.category = 'Category is required';
-    }
-    
-    return newErrors;
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    //handel submit
   };
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    const validationErrors = validateForm();
-    
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    
-    console.log('New item data:', formData);
-    
-    alert('Item added successfully!');
-    
-    navigate('/items');
-  };
-  
-  const handleCancel = () => {
-    navigate('/items');
-  };
-  
-  const iconOptions = [
-    { value: 'fas fa-code', label: 'Code' },
-    { value: 'fab fa-css3-alt', label: 'CSS' },
-    { value: 'fab fa-html5', label: 'HTML' },
-    { value: 'fab fa-js-square', label: 'JavaScript' },
-    { value: 'fas fa-box', label: 'Box' },
-    { value: 'fas fa-cube', label: 'Cube' },
-    { value: 'fas fa-database', label: 'Database' },
-    { value: 'fas fa-server', label: 'Server' },
-    { value: 'fas fa-cloud', label: 'Cloud' },
-    { value: 'fas fa-mobile-alt', label: 'Mobile' },
+
+  const tagOptions = [
+    'Bag', 'Clothing', 'Electronic', 'Accessory',
+    'Card', 'Key', 'Book/Paper', 'Stationary',
+    'Sports', 'Personal care', 'Other'
   ];
-  
-  const categoryOptions = ['Code', 'CSS', 'HTML', 'JS', 'Box', 'Cube', 'DB', 'Server', 'Cloud', 'Mobile', 'Security', 'DevOps'];
-  
+
+  const iconOptions = [
+    '🎒 Bag', '👕 Clothing', '📱 Electronic',
+    '🧾 Card', '🔑 Key', '📚 Book',
+    '⚽ Sports', '❓ Other'
+  ];
+
   return (
     <div className="add-item-container">
+
       <div className="add-item-card">
-        <h2 className="add-item-title">Add New Item</h2>
-        <p className="add-item-subtitle">Fill in the details below to add a new item</p>
-        
-        <form onSubmit={handleSubmit} className="add-item-form">
-          <div className="form-group">
-            <label htmlFor="title" className="form-label">
-              Item Title *
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className={`form-input ${errors.title ? 'input-error' : ''}`}
-              placeholder="Enter item title"
-            />
-            {errors.title && <span className="error-message">{errors.title}</span>}
+      <div className="top-actions">
+    <button
+      type="button"
+      className="top-icon"
+      onClick={() => navigate('/dashboard')}
+    >
+      <img src={BackIcon} alt="back" />
+    </button>
+
+    <h1 className="header-title">Add New Item</h1>
+
+    <button
+      type="button"
+      className="top-icon"
+      onClick={handleSubmit}
+    >
+      <img src={SubmitIcon} alt="submit" />
+    </button>
+  </div>
+        <p className="subtitle">
+          Fill in the details below to add a new item
+        </p>
+
+        <div className="fields">
+
+          {/* Title */}
+          <div className="field">
+            <label>Title*</label>
+            <div className="row two">
+              <input
+                name="title"
+                placeholder="Enter item’s title"
+                value={formData.title}
+                onChange={handleChange}
+              />
+              <button className="icon-btn" type="button">
+                <img src={ImageIcon} alt="upload" />
+              </button>
+            </div>
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">
-              Description *
-            </label>
+
+          {/* Description */}
+          <div className="field">
+            <label>Description</label>
             <textarea
-              id="description"
               name="description"
+              placeholder="Write description about item"
               value={formData.description}
               onChange={handleChange}
-              className={`form-textarea ${errors.description ? 'input-error' : ''}`}
-              placeholder="Enter item description"
-              rows="4"
             />
-            {errors.description && <span className="error-message">{errors.description}</span>}
           </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="category" className="form-label">
-                Category *
-              </label>
-              <select
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className={`form-select ${errors.category ? 'input-error' : ''}`}
-              >
-                <option value="">Select a category</option>
-                {categoryOptions.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+
+          {/* Tag & Icon */}
+          <div className="row two">
+            <div className="field">
+              <label>Tags*</label>
+              <select name="tag" value={formData.tag} onChange={handleChange}>
+                <option value="">Select a tag</option>
+                {tagOptions.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
                 ))}
               </select>
-              {errors.category && <span className="error-message">{errors.category}</span>}
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="icon" className="form-label">
-                Icon
-              </label>
-              <select
-                id="icon"
-                name="icon"
-                value={formData.icon}
-                onChange={handleChange}
-                className="form-select"
-              >
-                {iconOptions.map((icon) => (
-                  <option key={icon.value} value={icon.value}>
-                    {icon.label} ({icon.value})
-                  </option>
+
+            <div className="field">
+              <label>Icons*</label>
+              <select name="icon" value={formData.icon} onChange={handleChange}>
+                <option value="">Choose an icon</option>
+                {iconOptions.map(icon => (
+                  <option key={icon} value={icon}>{icon}</option>
                 ))}
               </select>
             </div>
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="status" className="form-label">
-              Status
-            </label>
-            <div className="status-options">
-              <label className="status-option">
+
+          {/* Status & Location */}
+          <div className="row two">
+            <div className="field">
+              <label>Status*</label>
+              <div className="status">
+                {['found', 'lost', 'delivered'].map(s => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`${s} ${formData.status === s ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, status: s }))}
+                  >
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Location*</label>
+              <div className="location">
                 <input
-                  type="radio"
-                  name="status"
-                  value="active"
-                  checked={formData.status === 'active'}
+                  name="latitude"
+                  placeholder="Latitude"
+                  value={formData.latitude}
                   onChange={handleChange}
                 />
-                <span className="status-label active">Active</span>
-              </label>
-              <label className="status-option">
                 <input
-                  type="radio"
-                  name="status"
-                  value="inactive"
-                  checked={formData.status === 'inactive'}
+                  name="longitude"
+                  placeholder="Longitude"
+                  value={formData.longitude}
                   onChange={handleChange}
                 />
-                <span className="status-label inactive">Inactive</span>
-              </label>
-              <label className="status-option">
-                <input
-                  type="radio"
-                  name="status"
-                  value="draft"
-                  checked={formData.status === 'draft'}
-                  onChange={handleChange}
-                />
-                <span className="status-label draft">Draft</span>
-              </label>
+                <img src={MapIcon} alt="map" />
+              </div>
             </div>
           </div>
-          
-          <div className="form-actions">
-            <button type="button" className="cancel-btn" onClick={handleCancel}>
-              Cancel
-            </button>
-            <button type="submit" className="submit-btn">
-              <i className="fas fa-plus"></i> Add Item
-            </button>
-          </div>
-        </form>
+
+        </div>
       </div>
     </div>
   );

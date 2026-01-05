@@ -10,7 +10,9 @@
   right: 0;
   bottom: 0;
   background: var(--lily-white);
+  overflow: hidden;
 }
+
 
 .main {
   flex: 1;
