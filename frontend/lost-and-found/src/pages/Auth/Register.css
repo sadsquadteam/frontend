@@ -1,0 +1,429 @@
+@import url(./../../styles/colors.css);
+@import url(./../../styles/error.css);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background: var(--blue-zodiac);
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* LEFT PANEL*/
+.left-panel {
+    width: clamp(350px, 30vw, 500px);
+    min-width: 350px; 
+    padding: clamp(40px, 8vh, 100px) clamp(20px, 3vw, 40px);
+    background: var(--regal-blue);
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    color: var(--carousel-pink);
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: start; 
+    align-items: start;     
+    text-align: start;
+    z-index: 10;
+}
+
+.logo {
+    width: min(200px, 40vw);
+    margin-bottom: clamp(20px, 4vh, 40px);
+    padding: 0;
+    max-width: 100%;
+}
+
+.left-panel h2 {
+    font-size: clamp(18px, 2vw, 24px);
+    margin-bottom: clamp(15px, 2vh, 25px);
+}
+
+.form {
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* FORM */
+.form label {
+    font-size: clamp(12px, 1vw, 13px);
+    opacity: 0.85;
+    margin-bottom: 6px;
+    display: block;
+    color:var(--carousel-pink);
+}
+
+.form input {
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    margin-bottom: 18px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: black;
+    background-color: var(--lily-white);
+}
+
+.form input::placeholder {
+    color:var(--muted);
+}
+
+/* ICON INSIDE INPUT */
+.input-icon {
+    position: absolute;
+    top: 35%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: auto;
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.input-icon.clickable {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.input-icon.clickable:hover {
+    opacity: 1;
+}
+
+/* focus state */
+.input-wrapper input:focus + .input-icon {
+    opacity: 0.9;
+}
+
+
+/* BUTTON */
+.form button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
+    margin-top: clamp(20px, 4vh, 40px);
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lily-white);
+    background: linear-gradient(90deg, var(--sea), var(--deep-rose));
+    transition: opacity 0.3s ease;
+}
+
+.form button:hover {
+    opacity: 0.9;
+}
+
+/* SIGN IN */
+.signin {
+    margin-top: 18px;
+    font-size: 12px;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.signin a {
+    color: var(--carousel-pink);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+}
+
+/* Box elements*/
+.box-img {
+    width: clamp(180px, 15vw, 260px);
+    max-width: 100%;
+    position: absolute;
+    left: 20%;
+    bottom: clamp(40px, 8vh, 70px); 
+}
+
+.box-animation {
+    width: clamp(180px, 15vw, 260px);
+    max-width: 100%;
+    position: absolute;
+    left: 20%; 
+    bottom: clamp(150px, 30vh, 300px); 
+}
+
+.box-animation img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+}
+
+.box-animation img:nth-child(1) {
+    animation: showFrame 3.5s forwards;
+    animation-delay: 0;
+}
+
+.box-animation img:nth-child(2) {
+    animation: showFrame 0.2s forwards;
+    animation-delay: 3.5s; 
+}
+
+.box-animation img:nth-child(3) {
+    animation: showFrame 0.2s forwards;
+    animation-delay: 3.7s; 
+}
+
+.box-animation img:nth-child(4) {
+    animation: showFinal 1.6s forwards;
+    animation-delay: 3.9s; 
+}
+
+@keyframes showFrame {
+    0%   { opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes showFinal {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* GIRL ANIMATION*/
+.girl-animation {
+    position: absolute;
+    width: clamp(150px, 12vw, 200px);   
+    height: clamp(225px, 18vw, 300px);   
+    left: 78%;
+    top: 72%;
+    transform: translateY(-50%);
+}
+
+.girl-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;      
+    object-fit: contain; 
+    opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateX(0);
+}
+
+.girl-frame:nth-child(1) { 
+    animation: girlWalk1 0.6s forwards; 
+    animation-delay: 0s; 
+}
+.girl-frame:nth-child(2) { 
+    animation: girlWalk2 0.6s forwards; 
+    animation-delay: 0.6s; 
+}
+.girl-frame:nth-child(3) { 
+    animation: girlWalk3 0.6s forwards; 
+    animation-delay: 1.2s; 
+}
+.girl-frame:nth-child(4) { 
+    animation: girlWalk4 0.6s forwards; 
+    animation-delay: 1.8s; 
+}
+.girl-frame:nth-child(5) { 
+    animation: girlWalk5 0.6s forwards; 
+    animation-delay: 2.4s; 
+}
+.girl-frame:nth-child(6) { 
+    animation: girlWalk6 0.6s forwards; 
+    animation-delay: 3.0s; 
+}
+.girl-frame:nth-child(7) { 
+    animation: girlWalk7 0.6s forwards; 
+    animation-delay: 3.6s; 
+}
+.girl-frame:nth-child(8) { 
+    animation: girlWalk8 0.6s forwards; 
+    animation-delay: 4.2s; 
+    transform: translateX(-35vw); 
+}
+.girl-frame:nth-child(9) { 
+    animation: girlWalk9 0.6s forwards; 
+    animation-delay: 4.8s; 
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateX(-35vw); 
+}
+.girl-frame:nth-child(10) { 
+    animation: girlWalkFinal 0.8s forwards; 
+    animation-delay: 5.4s; 
+    transform: translateX(-35vw); 
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    /* animation-fill-mode: forwards; */
+}
+
+@keyframes girlWalk1 {
+    0%   { opacity: 0; transform: translateX(20vw); }
+    10%  { opacity: 1; transform: translateX(20vw); }
+    90%  { opacity: 1; transform: translateX(0vw); }
+    100% { opacity: 0; transform: translateX(0vw); }
+}
+
+@keyframes girlWalk2 {
+    0%   { opacity: 0; transform: translateX(0vw); }
+    10%  { opacity: 1; transform: translateX(0vw); }
+    90%  { opacity: 1; transform: translateX(-10vw); }
+    100% { opacity: 0; transform: translateX(-10vw); }
+}
+
+@keyframes girlWalk3 {
+    0%   { opacity: 0; transform: translateX(-10vw); }
+    10%  { opacity: 1; transform: translateX(-10vw); }
+    90%  { opacity: 1; transform: translateX(-20vw); }
+    100% { opacity: 0; transform: translateX(-20vw); }
+}
+
+@keyframes girlWalk4 {
+    0%   { opacity: 0; transform: translateX(-20vw); }
+    10%  { opacity: 1; transform: translateX(-20vw); }
+    90%  { opacity: 1; transform: translateX(-30vw); }
+    100% { opacity: 0; transform: translateX(-30vw); }
+}
+
+@keyframes girlWalk5 {
+    0%   { opacity: 0; transform: translateX(-30vw); }
+    10%  { opacity: 1; transform: translateX(-30vw); }
+    90%  { opacity: 1; transform: translateX(-32vw); }
+    100% { opacity: 0; transform: translateX(-32vw); }
+}
+
+@keyframes girlWalk6 {
+    0%   { opacity: 0; transform: translateX(-32vw); }
+    10%  { opacity: 1; transform: translateX(-32vw); }
+    90%  { opacity: 1; transform: translateX(-34vw); }
+    100% { opacity: 0; transform: translateX(-34vw); }
+}
+
+@keyframes girlWalk7 {
+    0%   { opacity: 0; transform: translateX(-34vw); }
+    10%  { opacity: 1; transform: translateX(-34vw); }
+    90%  { opacity: 1; transform: translateX(-35vw); }
+    100% { opacity: 0; transform: translateX(-35vw); }
+}
+
+@keyframes girlWalk8 {
+    0%   { opacity: 0; transform: translateX(-35vw); }
+    10%  { opacity: 1; transform: translateX(-35vw); }
+    90%  { opacity: 1; transform: translateX(-35vw); }
+    100% { opacity: 0; transform: translateX(-35vw); }
+}
+
+@keyframes girlWalk9 {
+    0%   { opacity: 0; transform: translateX(-35vw); }
+    10%  { opacity: 1; transform: translateX(-35vw); }
+    90%  { opacity: 1; transform: translateX(-35vw); }
+    100% { opacity: 0; transform: translateX(-35vw); }
+}
+
+@keyframes girlWalkFinal {
+    from   { opacity: 0; transform: translateX(-35vw); }
+    100% { opacity: 1; transform: translateX(-35vw); }
+}
+
+@media (max-width: 1024px) {
+    .left-panel {
+        width: clamp(300px, 35vw, 400px);
+        min-width: 300px;
+        height: 100%;
+    }
+    
+    .girl-animation {
+        width: clamp(110px, 20vw, 190px);
+        height: clamp(190px, 25vw, 280px);
+        left: 88%;
+    }
+    
+    .box-img, .box-animation {
+        width: clamp(150px, 22vw, 210px);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .left-panel {
+        width: 100%;
+        min-width: 100%;
+        border-radius: 0;
+        padding: 40px 20px;
+        align-items: flex-start;
+        text-align: start;
+        height: 100%;
+        justify-content: center; 
+    }
+    
+    .right-panel {
+        display: none; 
+    }
+    
+    .girl-animation,
+    .box-img,
+    .box-animation {
+        display: none;
+    }
+    .form input {
+        padding-right: 44px;
+    }    
+}
+
+@media (max-width: 480px) {
+    .left-panel {
+        padding: 30px 15px;
+    }
+    
+    .logo {
+        width: 150px;
+        margin-bottom: 30px;
+    }
+    
+    .left-panel h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form button {
+        margin-top: 30px;
+    }
+    .form input {
+        padding-right: 40px;
+    }
+    
+    .input-icon {
+        width: 16px;
+        right: 14px;
+    }    
+}

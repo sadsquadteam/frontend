@@ -1,0 +1,114 @@
+.sidebar {
+  width: 100px;
+  height: 100%;
+  background: #132440;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.sidebar__logo {
+  margin-top: 20px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  gap: 10px
+}
+
+.sidebar__logo img {
+  width: 100%;
+  height: auto; 
+  max-width: 150px; 
+  display: block;
+}
+
+/* Nav container */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin-top: 80px;
+}
+
+
+.sidebar-nav__item {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 18px;
+
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.sidebar-nav__item img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Hover */
+.sidebar-nav__item:hover {
+  background: rgba(237, 246, 255, 0.08);
+}
+
+/* Active */
+.sidebar-nav__item.active {
+  background: rgba(237, 246, 255, 0.16);
+}
+
+
+
+.logout-btn {
+  margin-top: auto;
+  margin-bottom: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--lily-white); 
+  border: 2px solid var(--lily-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.logout-btn:hover {
+  background: var(--lily-white); 
+  border-color: var(--lily-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+  filter: brightness(0) saturate(100%); 
+}
+
+.logout-btn:hover img {
+  transform: rotate(180deg);
+}
+
+.logout-btn.subtle {
+  background: var(--lily-white);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}

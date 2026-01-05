@@ -1,0 +1,457 @@
+@import url(./../../styles/colors.css);
+@import url(./../../styles/error.css);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background: var(--blue-zodiac);
+}
+
+.login-container {
+  display: flex;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    flex-direction: row-reverse;
+}
+
+/* LOGIN PANEL*/
+.login-panel {
+  width: clamp(350px, 30vw, 500px);
+  min-width: 350px; 
+  padding: clamp(40px, 8vh, 100px) clamp(20px, 3vw, 40px);
+  background: var(--regal-blue);
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  color: var(--carousel-pink);
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: start;  
+  text-align: start;
+  z-index: 10;
+}
+
+.login-logo {
+  width: min(200px, 40vw);
+  max-width: 100%;
+  margin-bottom: clamp(20px, 4vh, 40px);
+}
+
+.login-panel h2 {
+  font-size: clamp(18px, 2vw, 24px);
+  margin-bottom: clamp(15px, 2vh, 25px);
+}
+
+.login-form {
+  width: 100%;
+}
+
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.login-form label {
+  font-size: clamp(12px, 1vw, 13px);
+  margin-bottom: 6px;
+  display: block;
+  color: var(--carousel-pink);
+  opacity: 0.85;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px 48px 12px 16px;
+  margin-bottom: 18px;
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: var(--lily-white);
+  color: #000;
+}
+
+.login-form input::placeholder {
+  color: var(--muted);
+}
+
+.input-icon {
+  position: absolute;
+  top: 35%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: auto;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.input-icon.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.input-icon.clickable:hover {
+  opacity: 1;
+}
+
+.input-wrapper input:focus + .input-icon {
+  opacity: 0.9;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  margin-top: clamp(20px, 4vh, 40px);
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lily-white);
+  background: linear-gradient(90deg, var(--sea), var(--deep-rose));
+  transition: opacity 0.3s ease;
+}
+
+.login-form button:hover {
+  opacity: 0.9;
+}
+
+.signup {
+  margin-top: 18px;
+  font-size: 12px;
+  opacity: 0.8;
+  text-align: center;
+  width: 100%;
+}
+
+.signup span {
+  color: var(--carousel-pink);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* RIGHT PANEL*/
+.login-right-panel {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.box-animation-login {
+    width: clamp(180px, 15vw, 260px);
+    max-width: 100%;
+    position: absolute;
+    left: 48%; 
+    bottom: clamp(150px, 30vh, 300px); 
+    z-index: 1;
+}
+
+.box-animation-login img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    z-index: inherit;
+}
+
+.box-animation-login img:nth-child(4) {
+    animation: showFramel 5.5s forwards;
+    animation-delay: 0; 
+    z-index: 2;
+}
+
+.box-animation-login img:nth-child(3) {
+    animation: showFinall 0.2s forwards;
+    animation-delay: 5.5s; 
+    z-index: 2;
+}
+
+@keyframes showFramel {
+    0%   { opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes showFinall {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* GIRL ANIMATION*/
+.girl-animation-login {
+    position: absolute;
+    width: clamp(150px, 12vw, 200px);   
+    height: clamp(225px, 18vw, 300px);   
+    left: 0;
+    top: 72%;
+    transform: translateY(-50%);
+    z-index: 5;
+}
+
+.girl-frame-login {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;      
+    object-fit: contain; 
+    opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateX(0);
+    z-index: 10;
+}
+
+.girl-frame-login:nth-child(1) { 
+    animation: girl2Walk1 0.6s forwards; 
+    animation-delay: 0s; 
+}
+.girl-frame-login:nth-child(2) { 
+    animation: girl2Walk2 0.6s forwards; 
+    animation-delay: 0.6s; 
+}
+.girl-frame-login:nth-child(3) { 
+    animation: girl2Walk3 0.6s forwards; 
+    animation-delay: 1.2s; 
+}
+.girl-frame-login:nth-child(4) { 
+    animation: girl2Walk4 0.6s forwards; 
+    animation-delay: 1.8s; 
+}
+.girl-frame-login:nth-child(5) { 
+    animation: girl2Walk5 0.6s forwards; 
+    animation-delay: 2.4s; 
+}
+.girl-frame-login:nth-child(6) { 
+    animation: girl2Walk6 0.6s forwards; 
+    animation-delay: 3.0s; 
+}
+.girl-frame-login:nth-child(7) { 
+    animation: girl2Walk7 0.6s forwards; 
+    animation-delay: 3.6s; 
+}
+.girl-frame-login:nth-child(8) { 
+    animation: girl2Walk8 0.6s forwards; 
+    animation-delay: 4.2s; 
+    /* transform: translateX(4vw);  */
+}
+.girl-frame-login:nth-child(9) { 
+    animation: girl2Walk9 0.6s forwards; 
+    animation-delay: 4.8s; 
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    /* transform: translateX(42vw);  */
+}
+.girl-frame-login:nth-child(10) { 
+    animation: girl2Walk9 0.6s forwards; 
+    animation-delay: 5.4s; 
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateX(42vw); 
+}
+.girl-frame-login:nth-child(11) { 
+    animation: girl2WalkFinal 0.8s forwards; 
+    animation-delay: 6s; 
+    transform: translateX(42vw); 
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    /* animation-fill-mode: forwards; */
+}
+
+@keyframes girl2Walk1 {
+    0%   { opacity: 0; transform: translateX(0vw); }
+    10%  { opacity: 1; transform: translateX(0vw); }
+    90%  { opacity: 1; transform: translateX(10vw); }
+    100% { opacity: 0; transform: translateX(10vw); }
+}
+
+@keyframes girl2Walk2 {
+    0%   { opacity: 0; transform: translateX(10vw); }
+    10%  { opacity: 1; transform: translateX(10vw); }
+    90%  { opacity: 1; transform: translateX(20vw); }
+    100% { opacity: 0; transform: translateX(20vw); }
+}
+
+@keyframes girl2Walk3 {
+    0%   { opacity: 0; transform: translateX(20vw); }
+    10%  { opacity: 1; transform: translateX(20vw); }
+    90%  { opacity: 1; transform: translateX(30vw); }
+    100% { opacity: 0; transform: translateX(30vw); }
+}
+
+@keyframes girl2Walk4 {
+    0%   { opacity: 0; transform: translateX(30vw); }
+    10%  { opacity: 1; transform: translateX(30vw); }
+    90%  { opacity: 1; transform: translateX(35vw); }
+    100% { opacity: 0; transform: translateX(35vw); }
+}
+
+@keyframes girl2Walk5 {
+    0%   { opacity: 0; transform: translateX(35vw); }
+    10%  { opacity: 1; transform: translateX(35vw); }
+    90%  { opacity: 1; transform: translateX(37vw); }
+    100% { opacity: 0; transform: translateX(37vw); }
+}
+
+@keyframes girl2Walk6 {
+    0%   { opacity: 0; transform: translateX(37vw); }
+    10%  { opacity: 1; transform: translateX(37vw); }
+    90%  { opacity: 1; transform: translateX(38vw); }
+    100% { opacity: 0; transform: translateX(38vw); }
+}
+
+@keyframes girl2Walk7 {
+    0%   { opacity: 0; transform: translateX(38vw); }
+    10%  { opacity: 1; transform: translateX(38vw); }
+    90%  { opacity: 1; transform: translateX(39vw); }
+    100% { opacity: 0; transform: translateX(39vw); }
+}
+
+@keyframes girl2Walk8 {
+    0%   { opacity: 0; transform: translateX(39vw); }
+    10%  { opacity: 1; transform: translateX(39vw); }
+    90%  { opacity: 1; transform: translateX(40vw); }
+    100% { opacity: 0; transform: translateX(40vw); }
+}
+
+@keyframes girl2Walk9 {
+    0%   { opacity: 0; transform: translateX(40vw); }
+    10%  { opacity: 1; transform: translateX(40vw); }
+    90%  { opacity: 1; transform: translateX(41vw); }
+    100% { opacity: 0; transform: translateX(41vw); }
+}
+@keyframes girl2Walk10 {
+    0%   { opacity: 0; transform: translateX(41vw); }
+    10%  { opacity: 1; transform: translateX(41vw); }
+    90%  { opacity: 1; transform: translateX(42vw); }
+    100% { opacity: 0; transform: translateX(42vw); }
+}
+
+@keyframes girl2WalkFinal {
+    from   { opacity: 0; transform: translateX(42vw); }
+    100% { opacity: 1; transform: translateX(42vw); }
+}
+
+@media (max-width: 1024px) {
+  .login-panel {
+    width: clamp(300px, 35vw, 400px);
+    min-width: 300px;
+  }
+  
+  .box-animation-login {
+      left: 40%;
+    
+  }
+  .box-img-login, .box-animation-login {
+        width: clamp(150px, 22vw, 210px);
+    }
+
+  .girl-animation-login {
+      width: clamp(110px, 20vw, 190px);
+      height: clamp(190px, 25vw, 280px);
+      left: -10%;
+    }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .login-panel {
+    width: 100%;
+    min-width: 100%;
+    border-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 24px;
+    padding: 40px 20px;
+    align-items: flex-start;
+    text-align: flex-start;
+    height: 100%;
+    justify-content: center;
+  }
+  
+  .login-form {
+    text-align: left;
+  }
+  
+  .login-form label,
+  .login-form input {
+    text-align: left;
+  }
+  
+  .login-right-panel {
+    display: none;
+  }
+  
+  .welcome-container,
+  .login-decoration {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-panel {
+    padding: 30px 15px;
+  }
+  
+  .login-logo {
+    width: 150px;
+    margin-bottom: 30px;
+  }
+  
+  .login-panel h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .login-form button {
+    margin-top: 30px;
+  }
+  
+  .signup {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .login-panel {
+    padding: 25px 12px;
+  }
+  
+  .login-logo {
+    width: 130px;
+    margin-bottom: 25px;
+  }
+  
+  .login-panel h2 {
+    font-size: 18px;
+  }
+  
+  .login-form input {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .login-form button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

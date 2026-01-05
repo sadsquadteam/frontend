@@ -1,0 +1,26 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  min-height: 0;
+  min-width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--lily-white);
+  overflow: hidden;
+}
+
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: calc(100vw - 72px);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
