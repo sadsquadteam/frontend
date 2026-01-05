@@ -2,7 +2,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import logo from "../../assets/images/logo-text.svg";
+import box1 from "../../assets/images/box/box-1.svg";
+import box2 from "../../assets/images/box/box-2.svg";
+import box3 from "../../assets/images/box/box-3.svg";
+import box4 from "../../assets/images/box/box-4.svg";
+import girl1 from "../../assets/images/girl2/girl-1.svg";
+import girl2 from "../../assets/images/girl2/girl-2.svg";
+import girl3 from "../../assets/images/girl2/girl-3.svg";
+import girl4 from "../../assets/images/girl2/girl-4.svg";
+import girl5 from "../../assets/images/girl2/girl-5.svg";
+import girl6 from "../../assets/images/girl2/girl-6.svg";
+import girl7 from "../../assets/images/girl2/girl-7.svg";
+import girl8 from "../../assets/images/girl2/girl-8.svg";
+import girl9 from "../../assets/images/girl2/girl-9.svg";
+import girl10 from "../../assets/images/girl2/girl-10.svg";
+import girl11 from "../../assets/images/girl2/girl-11.svg";
 
+const girlFrames = [
+  girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10, girl11
+];
 const Login = () => {
   const navigate = useNavigate();
 
@@ -90,7 +108,19 @@ const Login = () => {
 
         </form>
       </div>
-
+      <div className="left-side-login">
+          <div className="girl-animation-login">
+              {girlFrames.map((frame, index) => (
+                  <img key={index} src={frame} alt="" className="girl-frame-login" />
+              ))}
+          </div>
+          <div className="box-animation-login">
+                              <img src={box1} alt="" />
+                              <img src={box2} alt="" />
+                              <img src={box3} alt="" />
+                              <img src={box4} alt="" />
+          </div>
+      </div>
 
     </div>
   );
