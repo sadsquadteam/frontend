@@ -6,6 +6,18 @@ import MapIcon from '../../assets/images/Map.svg';
 import BackIcon from '../../assets/images/Back.svg';
 import SubmitIcon from '../../assets/images/Submit.svg';
 
+import AccessoryIcon from '../../assets/images/Accessory.svg';
+import BagIcon from '../../assets/images/Bag.svg';
+import BooksIcon from '../../assets/images/Books.svg';
+import CardsIcon from '../../assets/images/Cards.svg';
+import ClothingIcon from '../../assets/images/Clothing.svg';
+import ElectronicsIcon from '../../assets/images/Electronics.svg';
+import KeysIcon from '../../assets/images/Keys.svg';
+import OthersIcon from '../../assets/images/Others.svg';
+import PersonalCareIcon from '../../assets/images/Personal_care.svg';
+import SportsIcon from '../../assets/images/Sports.svg';
+import StationaryIcon from '../../assets/images/Stationary.svg';
+
 const AddItemForm = () => {
   const [formData, setFormData] = useState({
     title: '',
