@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Register.css";
+import "./otp.css";
 import logo from "../../assets/images/logo-text.svg";
-// import box from "../../assets/images/box.svg";
+import logoIcon from "../../assets/images/Logo-icon.svg";
 import box1 from "../../assets/images/box/box-1.svg";
 import box2 from "../../assets/images/box/box-2.svg";
 import box3 from "../../assets/images/box/box-3.svg";
@@ -22,7 +23,6 @@ const girlFrames = [
   girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10
 ];
 
-
 const Register = () => {
     const navigate = useNavigate();
     
@@ -33,6 +33,10 @@ const Register = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const [showOtpPopup, setShowOtpPopup] = useState(false);
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+    const [otpError, setOtpError] = useState("");
+    const [setIsOtpSent] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,7 +45,6 @@ const Register = () => {
             [name]: value
         }));
 
-        // Clear error as user types
         setErrors((prev) => ({
             ...prev,
             [name]: ""
@@ -85,25 +88,122 @@ const Register = () => {
         }
 
         console.log("Register data:", formData);
-
-
-        const user = { email: formData.email };
         
-        localStorage.setItem('user', JSON.stringify(user));
+        setShowOtpPopup(true);
+        simulateSendOtp();
+    };
+
+    const simulateSendOtp = () => {
+        setIsOtpSent(true);
+        console.log(`OTP sent to: ${formData.email}`);
+        // API call here
+    };
+
+    const handleOtpChange = (index, value) => {
+        if (!/^\d?$/.test(value)) return;
         
-        navigate("/dashboard", { state: { user } });
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+        
+        if (value && index < 5) {
+            const nextInput = document.getElementById(`otp-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+        
+        setOtpError("");
+        
+        // Auto-submit when all 6 digits are entered
+        if (newOtp.every(digit => digit !== "") && index === 5) {
+            verifyOtp();
+        }
+    };
+
+    const handleOtpKeyDown = (e, index) => {
+        if (e.key === "Backspace" && !otp[index] && index > 0) {
+            const prevInput = document.getElementById(`otp-${index - 1}`);
+            if (prevInput) prevInput.focus();
+        }
+        
+        // Allow pasting OTP
+        if (e.key === "v" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            // Handle paste will be done in onPaste event
+        }
+    };
+
+    const handleOtpPaste = (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+        
+        if (/^\d+$/.test(pastedData)) {
+            const digits = pastedData.split('').slice(0, 6);
+            const newOtp = [...otp];
+            
+            digits.forEach((digit, index) => {
+                if (index < 6) {
+                    newOtp[index] = digit;
+                }
+            });
+            
+            setOtp(newOtp);
+            
+            const lastFilledIndex = Math.min(digits.length - 1, 5);
+            const lastInput = document.getElementById(`otp-${lastFilledIndex}`);
+            if (lastInput) lastInput.focus();
+            
+            // Auto-submit if 6 digits were pasted
+            if (digits.length === 6) {
+                setTimeout(() => verifyOtp(), 100);
+            }
+        }
+    };
+
+    const handleResendOtp = () => {
+        setOtp(["", "", "", "", "", ""]);
+        setOtpError("");
+        simulateSendOtp();
+        
+        setTimeout(() => {
+            const firstInput = document.getElementById("otp-0");
+            if (firstInput) firstInput.focus();
+        }, 100);
+    };
+
+    const verifyOtp = () => {
+        const otpString = otp.join("");
+        
+        if (otpString.length !== 6) {
+            setOtpError("Please enter the complete verification code");
+            return;
+        }
+
+        console.log("Verifying OTP:", otpString);
+        
+        if (otpString.length === 6) {
+            const user = { email: formData.email };
+            localStorage.setItem('user', JSON.stringify(user));
+            navigate("/dashboard", { state: { user } });
+        } else {
+            setOtpError("Invalid verification code");
+        }
+    };
+
+    const closeOtpPopup = () => {
+        setShowOtpPopup(false);
+        setOtp(["", "", "", "", "", ""]);
+        setOtpError("");
+        setIsOtpSent(false);
     };
 
     return (
         <div className="container">
-
             <div className="left-panel">
                 <img src={logo} alt="Lost & Found" className="logo" />
 
                 <h2>Register</h2>
 
                 <form className="form" onSubmit={handleSubmit} noValidate>
-
                     <label>Email Address</label>
                     <input
                         type="email"
@@ -144,7 +244,6 @@ const Register = () => {
                     <p className="signin">
                         Already have an account? <a href="/login">Sign in</a>
                     </p>
-
                 </form>
             </div>
 
@@ -154,7 +253,6 @@ const Register = () => {
                         <img key={index} src={frame} alt="" className="girl-frame" />
                     ))}
                 </div>
-                {/* <img src={box} alt="Lost & Found Box" className="box-img" /> */}
                 <div className="box-animation">
                     <img src={box1} alt="" />
                     <img src={box2} alt="" />
@@ -163,6 +261,76 @@ const Register = () => {
                 </div>
             </div>
 
+            {showOtpPopup && (
+                <div className="otp-overlay">
+                    <div className="otp-popup">
+                        <button 
+                            className="otp-back-btn"
+                            onClick={closeOtpPopup}
+                            aria-label="Go back"
+                        >
+                            &lt;
+                        </button>
+                        <div className="otp-logo-container">
+                            <img 
+                                src={logoIcon} 
+                                alt="Lost & Found Logo" 
+                                className="otp-logo" 
+                            />
+                        </div>
+                        
+                        <div className="otp-header">
+                            <h3>Enter verification code</h3>
+                            <p>A verification code has been sent to:</p>
+                            <p className="otp-email">{formData.email}</p>
+                        </div>
+
+                        <div 
+                            className="otp-inputs"
+                            onPaste={handleOtpPaste}
+                        >
+                            {otp.map((digit, index) => (
+                                <input
+                                    key={index}
+                                    id={`otp-${index}`}
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    maxLength="1"
+                                    value={digit}
+                                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                                    className="otp-input"
+                                    autoFocus={index === 0}
+                                />
+                            ))}
+                        </div>
+
+                        {otpError && <div className="otp-error">{otpError}</div>}
+
+                        <div className="otp-resend">
+                            <span>Didn't get a verification code? </span>
+                            <button 
+                                type="button" 
+                                className="resend-btn"
+                                onClick={handleResendOtp}
+                            >
+                                Resend
+                            </button>
+                        </div>
+
+                        <div className="otp-button">
+                            <button 
+                                type="button" 
+                                className="otp-continue"
+                                onClick={verifyOtp}
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
