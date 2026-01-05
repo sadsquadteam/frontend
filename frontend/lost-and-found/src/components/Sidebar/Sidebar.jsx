@@ -5,6 +5,7 @@ import '../../styles/sidebar.css';
 import logo from '../../assets/images/Logo-icon.svg'; 
 import logoText from '../../assets/images/logo-text.svg';
 import logOutIcon from '../../assets/images/logOut.svg';
+import { authAPI, tokenService } from '../../services/api'; // Add this import
 
 const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser = null }) => {
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          // eslint-disable-next-line react-hooks/set-state-in-effect
           setLocalUser(parsedUser);
           setLocalIsAuthenticated(true);
         }
@@ -33,19 +33,34 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
     }
   }, [propUser, propIsAuthenticated]);
 
-  const handleLogout = () => {
-    // Clear user from localStorage
-    localStorage.removeItem('user');
-    
-    // Reset local state
-    setLocalUser(null);
-    setLocalIsAuthenticated(false);
-    
-    // Navigate to dashboard (non-authenticated view)
-    navigate('/dashboard', { replace: true });
-    
-    // Optional: Force refresh to update all components
-    window.location.reload();
+  const handleLogout = async () => {
+    try {
+      // Get tokens
+      const accessToken = tokenService.getAccessToken();
+      const refreshToken = tokenService.getRefreshToken();
+      
+      // Call logout API if we have tokens
+      if (accessToken && refreshToken) {
+        await authAPI.logout(refreshToken, accessToken);
+      }
+    } catch (error) {
+      console.error('Logout API error:', error);
+      // Continue with client-side logout even if API fails
+    } finally {
+      // Clear tokens and user data
+      tokenService.clearTokens();
+      localStorage.removeItem('user');
+      
+      // Reset local state
+      setLocalUser(null);
+      setLocalIsAuthenticated(false);
+      
+      // Navigate to dashboard (non-authenticated view)
+      navigate('/dashboard', { replace: true });
+      
+      // Optional: Force refresh to update all components
+      window.location.reload();
+    }
   };
 
   // Determine which authentication state to use
