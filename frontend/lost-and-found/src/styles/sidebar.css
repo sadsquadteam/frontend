@@ -1,56 +1,75 @@
 .sidebar {
-  width: 72px;
-  background: var(--blue-zodiac);
-  border-right: 1px solid var(--border);
+  width: 100px;
+  height: 100%;
+  background: #132440;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px 0;
-  gap: 20px;
-  flex-shrink: 0;
-  height: 100vh;
-  overflow-y: auto;
+  position: relative;
 }
-
 .sidebar__logo {
-  width: 40px;
-  height: 40px;
-  background: var(--lily-white);
-  color: white;
-  border-radius: 10px;
+  margin-top: 20px;
+  width: 80px;
+  height: 80px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  gap: 10px
 }
 
 .sidebar__logo img {
   width: 100%;
   height: auto; 
   max-width: 150px; 
+  display: block;
 }
 
+/* Nav container */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 20px;
+  align-items: center;
+  gap: 40px;
+  margin-top: 80px;
 }
 
-.sidebar-nav svg {
-  font-size: 18px;
-  color: var(--muted);
+
+.sidebar-nav__item {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
   cursor: pointer;
+  border-radius: 18px;
+
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.sidebar-nav svg.active {
-  color: var(--deep-rose);
+.sidebar-nav__item img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Hover */
+.sidebar-nav__item:hover {
+  background: rgba(237, 246, 255, 0.08);
+}
+
+/* Active */
+.sidebar-nav__item.active {
+  background: rgba(237, 246, 255, 0.16);
 }
 
 .avatar {
   margin-top: auto;
-  width: 36px;
-  height: 36px;
+  margin-bottom: 10px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: url("https://i.pravatar.cc/100") center/cover;
 }

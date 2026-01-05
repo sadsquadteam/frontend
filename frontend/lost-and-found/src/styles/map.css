@@ -1,24 +1,92 @@
+/* Map wrapper */
 .map-wrapper {
-  height: 100%;
-  width: 100%;
-  background: var(--carousel-pink);
-  border-radius: 0;
-  overflow: hidden;
   position: relative;
-  min-height: 0;
-  border: none;
+  width: 100%;
+  height: 100%;
+  background: var(--carousel-pink);
+  overflow: hidden;
 }
 
+/* Leaflet container */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
+  z-index: 1;
   font-family: inherit;
 }
 
+/* Toolbar overlay */
+.map-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: calc(100% - 80px);
+  max-width: 1200px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+/* Search box */
+.search-box {
+  position: relative;
+  width: 380px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 48px 14px 20px;
+  border-radius: 30px;
+  border: 2px solid #ff4f8b;
+  background: rgba(255, 221, 233, 0.6);
+  font-size: 16px;
+  outline: none;
+}
+
+.search-box input::placeholder {
+  color: rgba(207, 54, 107, 0.6)
+}
+
+.search-box .icon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff4f8b;
+  font-size: 18px;
+}
+
+/* Filter button */
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: 2px solid #ff4f8b;
+  background: rgba(255, 221, 233, 0.6);
+
+  font-size: 16px;
+  color: rgba(207, 54, 107, 0.6);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #ff4f8b;
+  color: #fff;
+}
+
+/* Leaflet controls (اصلاح‌شده) */
 .leaflet-control {
-  box-sizing: border-box;
   border-radius: 10px !important;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgba(19, 36, 64, 0.15) !important;
   border: 1px solid var(--border) !important;
 }
@@ -26,7 +94,6 @@
 .leaflet-control-zoom a {
   background: var(--carousel-pink) !important;
   color: var(--blue-zodiac) !important;
-  border-bottom: 1px solid var(--border) !important;
 }
 
 .leaflet-control-zoom a:hover {
@@ -35,10 +102,10 @@
 
 .leaflet-control-attribution {
   background: rgba(255, 255, 255, 0.9) !important;
-  color: var(--blue-zodiac) !important;
   font-size: 11px !important;
 }
 
+/* Map tiles */
 .leaflet-tile {
   filter: saturate(1.1) contrast(1.05) !important;
 }

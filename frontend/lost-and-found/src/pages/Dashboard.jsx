@@ -26,12 +26,11 @@ const Dashboard = () => {
 
   return (
     <div className="layout">
-      <Sidebar />
+      <Sidebar isAuthenticated={!!user} user={user} />
       
       <div className="main">
         {/* Pass isAuthenticated and user props to Header */}
         <Header isAuthenticated={!!user} user={user}>
-          <img src={logoText} alt="Logo" />
         </Header>
         
         <main className="content">

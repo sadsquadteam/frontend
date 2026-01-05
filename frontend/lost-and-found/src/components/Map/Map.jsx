@@ -4,18 +4,32 @@ import 'leaflet/dist/leaflet.css';
 
 const SimpleMap = () => {
   const sharifCenter = [35.7036, 51.3515];
-  
+
   const bounds = [
-    [35.698, 51.340], // Southwest coordinates
-    [35.710, 51.365], // Northeast coordinates
+    [35.698, 51.340],
+    [35.710, 51.365],
   ];
 
   return (
     <div className="map-wrapper">
+
+      {/* 🔍 Search & Filter Overlay */}
+      <div className="map-toolbar">
+        <div className="search-box">
+          <input type="text" placeholder="Search" />
+          <span className="icon">🔍</span>
+        </div>
+
+        <button className="filter-btn">
+          Filter by
+          <span className="filter-icon">⚙️</span>
+        </button>
+      </div>
+
       <MapContainer
         center={sharifCenter}
         zoom={17}
-        scrollWheelZoom={true}
+        scrollWheelZoom
         keyboard={false}
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
@@ -25,7 +39,7 @@ const SimpleMap = () => {
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; OpenStreetMap contributors'
+          attribution="&copy; OpenStreetMap contributors"
         />
       </MapContainer>
     </div>

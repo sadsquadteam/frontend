@@ -1,60 +1,51 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ICONS } from '../../styles/icons';
+import Location from '../../assets/images/Location.svg'; 
+import Category from '../../assets/images/Category.svg';
+import Chatbot from '../../assets/images/Chatbot.svg';
 
-const SidebarNav = () => {
+const SidebarNav = ({ isAuthenticated = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const isDashboard = location.pathname === '/' || location.pathname === '/dashboard';
-  const isItems = location.pathname === '/items' || location.pathname.startsWith('/items/');
-  
+
   const navItems = [
-    { 
-      icon: ICONS.HOUSE, 
-      active: isDashboard,
-      onClick: () => navigate('/dashboard'),
-      tooltip: 'Dashboard'
+    {
+      icon: Location,
+      path: '/dashboard',
+      active: location.pathname === '/' || location.pathname === '/dashboard',
+      tooltip: 'Map',
+      authRequired: false,
     },
-    { 
-      icon: ICONS.CHART,
-      active: false,
-      onClick: () => console.log('Analytics clicked'),
-      tooltip: 'Analytics'
+    {
+      icon: Category,
+      path: '/items',
+      active: location.pathname.startsWith('/items'),
+      tooltip: 'Items',
+      authRequired: false,
     },
-    { 
-      icon: ICONS.USERS,
-      active: isItems,
-      onClick: () => navigate('/items'),
-      tooltip: 'Items'
-    },
-    { 
-      icon: ICONS.LAYERS,
-      active: false,
-      onClick: () => console.log('Layers clicked'),
-      tooltip: 'Layers'
-    },
-    { 
-      icon: ICONS.GEAR,
-      active: false,
-      onClick: () => console.log('Settings clicked'),
-      tooltip: 'Settings'
+    {
+      icon: Chatbot,
+      path: '/chat',
+      active: location.pathname === '/chat',
+      tooltip: 'Chat',
+      authRequired: true,
     },
   ];
 
   return (
     <nav className="sidebar-nav">
-      {navItems.map((item, index) => {
-        const Icon = item.icon;
-        return (
-          <Icon 
+      {navItems
+        .filter(item => !item.authRequired || isAuthenticated)
+        .map((item, index) => (
+          <button
             key={index}
-            className={item.active ? 'active' : ''}
-            onClick={item.onClick}
+            className={`sidebar-nav__item ${item.active ? 'active' : ''}`}
+            onClick={() => navigate(item.path)}
             title={item.tooltip}
-          />
-        );
-      })}
+          >
+            <img src={item.icon} alt={item.tooltip} />
+          </button>
+        ))}
     </nav>
   );
 };
