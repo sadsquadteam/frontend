@@ -65,11 +65,29 @@
   background: rgba(237, 246, 255, 0.16);
 }
 
-.avatar {
+.logout-button {
   margin-top: auto;
   margin-bottom: 10px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: url("https://i.pravatar.cc/100") center/cover;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background-color: var(--lily-white);
+  transition: var(--lily-white) 0.3s ease;
+}
+
+.logout-button img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+}
+
+.logout-button:hover img {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(500%) hue-rotate(-10deg) brightness(90%) contrast(100%);
 }
