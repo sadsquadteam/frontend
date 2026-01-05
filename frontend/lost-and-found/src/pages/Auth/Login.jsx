@@ -20,7 +20,7 @@ import girl11 from "../../assets/images/girl2/girl-11.svg";
 import profile from '../../assets/images/Profile.svg'; 
 import open_eye from '../../assets/images/Open-eye.svg';
 import closed_eye from '../../assets/images/Closed-eye.svg';
-import { authAPI, tokenService } from "../../services/api"; // Add this import
+import { authAPI, tokenService } from "../../services/api"; 
 
 const girlFrames = [
   girl1, girl2, girl3, girl4, girl5, girl6, girl7, girl8, girl9, girl10, girl11
@@ -52,7 +52,6 @@ const Login = () => {
       [name]: "",
     }));
     
-    // Clear API error when user starts typing
     if (apiError) setApiError("");
   };
 
@@ -98,26 +97,21 @@ const Login = () => {
       const user = {
         ...userProfile,
         email: formData.email,
-        // Add token info if needed later
         access_token: response.access,
         refresh_token: response.refresh
       };
       
-      // Save user to localStorage (without tokens for security)
       localStorage.setItem('user', JSON.stringify(userProfile));
       
-      // Navigate to dashboard
       navigate("/dashboard", { state: { user: userProfile } });
       
     } catch (error) {
-      // Handle specific error messages from backend
       const errorMessage = error.message || "Login failed. Please check your credentials.";
       setApiError(errorMessage);
       
-      // Clear form on invalid credentials (security practice)
       if (error.message.includes("Invalid") || error.message.includes("Unauthorized")) {
         setFormData({
-          email: formData.email, // Keep email for convenience
+          email: formData.email, 
           password: "",
         });
       }

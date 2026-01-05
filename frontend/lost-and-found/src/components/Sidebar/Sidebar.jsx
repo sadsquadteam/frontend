@@ -5,7 +5,7 @@ import '../../styles/sidebar.css';
 import logo from '../../assets/images/Logo-icon.svg'; 
 import logoText from '../../assets/images/logo-text.svg';
 import logOutIcon from '../../assets/images/logOut.svg';
-import { authAPI, tokenService } from '../../services/api'; // Add this import
+import { authAPI, tokenService } from '../../services/api'; 
 
 const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser = null }) => {
   const navigate = useNavigate();
@@ -13,7 +13,6 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
   const [localIsAuthenticated, setLocalIsAuthenticated] = useState(propIsAuthenticated);
 
   useEffect(() => {
-    // If props are not provided, check localStorage
     if (!propUser) {
       try {
         const storedUser = localStorage.getItem('user');
@@ -27,7 +26,6 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
         localStorage.removeItem('user');
       }
     } else {
-      // Use props if provided
       setLocalUser(propUser);
       setLocalIsAuthenticated(propIsAuthenticated);
     }
@@ -35,35 +33,27 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
 
   const handleLogout = async () => {
     try {
-      // Get tokens
       const accessToken = tokenService.getAccessToken();
       const refreshToken = tokenService.getRefreshToken();
       
-      // Call logout API if we have tokens
       if (accessToken && refreshToken) {
         await authAPI.logout(refreshToken, accessToken);
       }
     } catch (error) {
       console.error('Logout API error:', error);
-      // Continue with client-side logout even if API fails
     } finally {
-      // Clear tokens and user data
       tokenService.clearTokens();
       localStorage.removeItem('user');
       
-      // Reset local state
       setLocalUser(null);
       setLocalIsAuthenticated(false);
       
-      // Navigate to dashboard (non-authenticated view)
       navigate('/dashboard', { replace: true });
       
-      // Optional: Force refresh to update all components
       window.location.reload();
     }
   };
 
-  // Determine which authentication state to use
   const isAuthenticated = propIsAuthenticated || localIsAuthenticated;
   const user = propUser || localUser;
 

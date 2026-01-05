@@ -1,5 +1,4 @@
-// frontend/src/services/api.js
-const API_BASE_URL = 'http://localhost:8000/api'; // Django backend URL
+const API_BASE_URL = 'http://localhost:8000/api'; 
 
 // Helper function for making API requests
 const apiRequest = async (endpoint, method = 'GET', data = null, token = null) => {

@@ -40,11 +40,11 @@ const Register = () => {
     const [showOtpPopup, setShowOtpPopup] = useState(false);
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [otpError, setOtpError] = useState("");
-    const [isOtpSent, setIsOtpSent] = useState(false); // Changed from setIsOtpSent to isOtpSent
+    const [isOtpSent, setIsOtpSent] = useState(false); 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [apiError, setApiError] = useState(""); // For general API errors
+    const [apiError, setApiError] = useState(""); 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -58,7 +58,6 @@ const Register = () => {
             [name]: ""
         }));
         
-        // Clear API error when user starts typing
         if (apiError) setApiError("");
     };
 
@@ -141,7 +140,6 @@ const Register = () => {
             if (nextInput) nextInput.focus();
         }
         
-        // Auto-submit when all 6 digits are entered
         if (newOtp.every(digit => digit !== "") && index === 5) {
             verifyOtp();
         }
@@ -175,7 +173,6 @@ const Register = () => {
             const lastInput = document.getElementById(`otp-${lastFilledIndex}`);
             if (lastInput) lastInput.focus();
             
-            // Auto-submit if 6 digits were pasted
             if (digits.length === 6) {
                 setTimeout(() => verifyOtp(), 100);
             }
@@ -189,7 +186,6 @@ const Register = () => {
         try {
             await authAPI.registerStep1(formData.email);
             
-            // Focus on first input
             setTimeout(() => {
                 const firstInput = document.getElementById("otp-0");
                 if (firstInput) firstInput.focus();
@@ -202,17 +198,11 @@ const Register = () => {
 
     const verifyOtp = async () => {
         const otpString = otp.join("");
-        
-        if (otpString.length !== 6) {
-            setOtpError("Please enter the complete verification code");
-            return;
-        }
 
         setLoading(true);
         setOtpError("");
 
         try {
-            // Step 2: Verify OTP and set password
             const response = await authAPI.registerStep2(
                 formData.email,
                 otpString,
@@ -230,7 +220,6 @@ const Register = () => {
             
             localStorage.setItem('user', JSON.stringify(userData));
             
-            // Navigate to dashboard
             navigate("/dashboard", { state: { user: userData } });
             
         } catch (error) {
