@@ -30,7 +30,6 @@ const apiRequest = async (endpoint, method = 'GET', data = null, token = null, e
   }
 
   if (!response.ok) {
-    // Special-case login
     if (endpoint === '/users/login/') {
       if (response.status === 401) {
         throw new Error(
@@ -92,7 +91,6 @@ export const authAPI = {
 
   login: async (email, password) => {
     const data = await apiRequest('/users/login/', 'POST', { email, password });
-    // Expect backend to return: { access: "...", refresh: "...", user: {...} }
     if (data.access && data.refresh) {
       tokenService.setTokens(data.access, data.refresh);
     }
