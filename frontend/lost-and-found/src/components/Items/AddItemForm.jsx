@@ -5,22 +5,8 @@ import ImageIcon from '../../assets/images/Image-insert.svg';
 import MapIcon from '../../assets/images/Map.svg';
 import BackIcon from '../../assets/images/Back.svg';
 import SubmitIcon from '../../assets/images/Submit.svg';
-
-import AccessoryIcon from '../../assets/images/Accessory.svg';
-import BagIcon from '../../assets/images/Bag.svg';
-import BooksIcon from '../../assets/images/Books.svg';
-import CardsIcon from '../../assets/images/Cards.svg';
-import ClothingIcon from '../../assets/images/Clothing.svg';
-import ElectronicsIcon from '../../assets/images/Electronics.svg';
-import KeysIcon from '../../assets/images/Keys.svg';
-import OthersIcon from '../../assets/images/Others.svg';
-import PersonalCareIcon from '../../assets/images/Personal_care.svg';
-import SportsIcon from '../../assets/images/Sports.svg';
-import StationaryIcon from '../../assets/images/Stationary.svg';
-
 import { itemsAPI, tokenService } from '../../services/api';
 
-// Adjust IDs to match your Tag table.
 const TAG_LABEL_TO_ID = {
   Bag: 1,
   Clothing: 2,
@@ -35,14 +21,19 @@ const TAG_LABEL_TO_ID = {
   Other: 11,
 };
 
-const AddItemForm = () => {
+const AddItemForm = ({ 
+  isModal = false, 
+  coordinates = null,
+  onItemCreated = null,
+  onCancel = null 
+}) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    tags: [],   // labels; converted to IDs on submit
+    tags: [],
     status: 'found',
-    latitude: '',
-    longitude: '',
+    latitude: coordinates ? coordinates[0].toString() : '',
+    longitude: coordinates ? coordinates[1].toString() : '',
     image: null,
   });
   const [selectedTag, setSelectedTag] = useState('');
@@ -76,21 +67,19 @@ const AddItemForm = () => {
 
     if (!tokenService.isAuthenticated()) {
       setError('You must be logged in to add an item.');
-      navigate('/login');
+      if (!isModal) navigate('/login');
       return;
     }
 
     if (
       !formData.title ||
       formData.tags.length === 0 ||
-      !formData.latitude ||
-      !formData.longitude
+      (!isModal && (!formData.latitude || !formData.longitude))
     ) {
-      setError('Please fill in title, tag, latitude and longitude.');
+      setError('Please fill in required fields.');
       return;
     }
 
-    // Convert labels to IDs for backend ManyToMany
     const tagIds = formData.tags
       .map((label) => TAG_LABEL_TO_ID[label])
       .filter(Boolean);
@@ -102,13 +91,12 @@ const AddItemForm = () => {
 
     let payload;
     if (formData.image) {
-      // For ImageField, use multipart
       const fd = new FormData();
       fd.append('title', formData.title);
       fd.append('description', formData.description);
       fd.append('status', formData.status);
-      fd.append('latitude', formData.latitude);
-      fd.append('longitude', formData.longitude);
+      fd.append('latitude', isModal ? coordinates[0] : formData.latitude);
+      fd.append('longitude', isModal ? coordinates[1] : formData.longitude);
       tagIds.forEach((id) => fd.append('tags', id));
       fd.append('image', formData.image);
       payload = fd;
@@ -117,8 +105,8 @@ const AddItemForm = () => {
         title: formData.title,
         description: formData.description,
         status: formData.status,
-        latitude: parseFloat(formData.latitude),
-        longitude: parseFloat(formData.longitude),
+        latitude: parseFloat(isModal ? coordinates[0] : formData.latitude),
+        longitude: parseFloat(isModal ? coordinates[1] : formData.longitude),
         tags: tagIds,
       };
     }
@@ -126,17 +114,22 @@ const AddItemForm = () => {
     setSubmitting(true);
     try {
       await itemsAPI.createItem(payload);
-      setFormData({
-        title: '',
-        description: '',
-        tags: [],
-        status: 'found',
-        latitude: '',
-        longitude: '',
-        image: null,
-      });
-      setSelectedTag('');
-      navigate('/items');
+      
+      if (isModal && onItemCreated) {
+        onItemCreated(formData);
+      } else {
+        setFormData({
+          title: '',
+          description: '',
+          tags: [],
+          status: 'found',
+          latitude: '',
+          longitude: '',
+          image: null,
+        });
+        setSelectedTag('');
+        navigate('/items');
+      }
     } catch (err) {
       setError(err.message || 'Failed to create item.');
     } finally {
@@ -157,6 +150,129 @@ const AddItemForm = () => {
     'Personal care',
     'Other',
   ];
+
+  if (isModal) {
+    return (
+      <div className="add-item-container" style={{ padding: '0' }}>
+        <div className="add-item-card" style={{ boxShadow: 'none', margin: '0' }}>
+          <div style={{ padding: '20px' }}>
+            <h3 style={{ marginBottom: '15px', textAlign: 'center' }}>
+              Add New Item
+              <br />
+              <small style={{ fontSize: '14px', color: '#666' }}>
+                Location: {coordinates[0].toFixed(6)}, {coordinates[1].toFixed(6)}
+              </small>
+            </h3>
+            
+            {error && <div className="error-message">{error}</div>}
+            
+            <div className="fields">
+              {/* Title */}
+              <div className="field">
+                <label>Title*</label>
+                <div className="row two">
+                  <input
+                    name="title"
+                    placeholder="Enter item's title"
+                    value={formData.title}
+                    onChange={handleChange}
+                  />
+                  <label className="icon-btn">
+                    <img src={ImageIcon} alt="upload" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="field">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  placeholder="Write description about item"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Tag */}
+              <div className="field">
+                <label>Tag*</label>
+                <select
+                  name="tag"
+                  value={selectedTag}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a tag</option>
+                  {tagOptions.map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status */}
+              <div className="field">
+                <label>Status*</label>
+                <div className="status">
+                  {['found', 'lost', 'delivered'].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`${s} ${formData.status === s ? 'active' : ''}`}
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, status: s }))
+                      }
+                    >
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button
+                  onClick={onCancel}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  {submitting ? 'Adding...' : 'Add Item'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="add-item-container">
@@ -195,7 +311,7 @@ const AddItemForm = () => {
             <div className="row two">
               <input
                 name="title"
-                placeholder="Enter item’s title"
+                placeholder="Enter item's title"
                 value={formData.title}
                 onChange={handleChange}
               />
