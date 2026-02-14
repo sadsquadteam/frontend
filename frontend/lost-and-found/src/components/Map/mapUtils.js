@@ -45,3 +45,14 @@ export const MAP_CONSTANTS = {
 export const getMarkerIcon = (status, icons = statusIcons) => {
   return icons[status] || icons.default;
 };
+
+export const getCardColors = (id) => {
+  const cardColors = [
+    { header: 'one', colors: ['#f12711', '#f5af19'] },
+    { header: 'two', colors: ['#7F00FF', '#E100FF'] },
+    { header: 'three', colors: ['#3f2b96', '#a8c0ff'] },
+    { header: 'four', colors: ['#11998e', '#38ef7d'] },
+  ];
+  const colorIndex = id % 4;
+  return cardColors[colorIndex];
+};
