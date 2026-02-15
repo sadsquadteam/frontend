@@ -1,58 +1,7 @@
-// import React from 'react';
-// import { MapContainer, TileLayer } from 'react-leaflet';
-// import 'leaflet/dist/leaflet.css';
-// // import search from '../../assets/images/Search.svg'; 
-// // import filter from '../../assets/images/Filter.svg';
-
-// const SimpleMap = () => {
-//   const sharifCenter = [35.7036, 51.3515];
-
-//   const bounds = [
-//     [35.698, 51.340],
-//     [35.710, 51.365],
-//   ];
-
-//   return (
-//     <div className="map-wrapper">
-
-//       {/* <div className="map-toolbar">
-//         <div className="search-box">
-//           <input type="text" placeholder="Search" />
-//           <img src={search} alt="Search" />
-//         </div>
-
-//         <button className="filter-btn">
-//           Filter by
-//           <img src={filter} alt="Filter" />
-//         </button>
-//       </div> */}
-
-//       <MapContainer
-//         center={sharifCenter}
-//         zoom={17}
-//         scrollWheelZoom
-//         keyboard={false}
-//         maxBounds={bounds}
-//         maxBoundsViscosity={1.0}
-//         minZoom={17}
-//         maxZoom={18}
-//         className="leaflet-container"
-//       >
-//         <TileLayer
-//           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//           attribution="&copy; OpenStreetMap contributors"
-//         />
-//       </MapContainer>
-//     </div>
-//   );
-// };
-
-// export default SimpleMap;
-
-
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 import { itemsAPI } from '../../services/api';
 import { MAP_CONSTANTS, getMarkerIcon } from './mapUtils';
@@ -66,11 +15,66 @@ import {
   FullScreenItemDetail
 } from './MapComponents';
 
+// Custom component to handle geolocation
+const LocationMarker = () => {
+  const [position, setPosition] = useState(null);
+  const [error, setError] = useState(null);
+  const map = useMap();
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    const successHandler = (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const userPosition = [latitude, longitude];
+      setPosition(userPosition);
+    };
+
+    const errorHandler = (err) => {
+      setError(`Error getting location: ${err.message}`);
+      console.error(err);
+    };
+
+    navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    });
+
+    const watchId = navigator.geolocation.watchPosition(successHandler, errorHandler, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    });
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [map]);
+
+  return position === null ? null : (
+    <Marker 
+      position={position}
+      icon={L.divIcon({
+        html: '<div style="background-color: #4285F4; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+        className: 'user-location-marker',
+        iconSize: [26, 26],
+        popupAnchor: [0, -13]
+      })}
+    >
+    </Marker>
+  );
+};
+
 const SimpleMap = () => {
   const [markers, setMarkers] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [locationStatus, setLocationStatus] = useState('loading'); // 'loading', 'success', 'error'
   
   const {
     holdProgress,
@@ -82,6 +86,21 @@ const SimpleMap = () => {
     handleItemCreated: handleItemCreatedFromHook,
     cleanup
   } = useHoldToAddMarker();
+
+  // Check geolocation availability on mount
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationStatus('error');
+      console.log('Geolocation is not supported');
+    } else {
+      // Just test if geolocation works
+      navigator.geolocation.getCurrentPosition(
+        () => setLocationStatus('success'),
+        () => setLocationStatus('error'),
+        { timeout: 3000 }
+      );
+    }
+  }, []);
 
   const handleMapMouseDown = (e) => {
     const { lat, lng } = e.latlng;
@@ -155,10 +174,10 @@ const SimpleMap = () => {
         zoom={17}
         scrollWheelZoom
         keyboard={false}
-        maxBounds={MAP_CONSTANTS.bounds}
+        // maxBounds={MAP_CONSTANTS.bounds}
         maxBoundsViscosity={1.0}
-        minZoom={17}
-        maxZoom={18}
+        // minZoom={17}
+        // maxZoom={18}
         className="leaflet-container"
         style={{ height: '100%', width: '100%' }}
         whenReady={(map) => {
@@ -178,6 +197,9 @@ const SimpleMap = () => {
           url={MAP_CONSTANTS.tileLayer.url}
           attribution={MAP_CONSTANTS.tileLayer.attribution}
         />
+        
+        {/* Add the location marker component */}
+        <LocationMarker />
         
         {markers.map((marker) => (
           <Marker 
