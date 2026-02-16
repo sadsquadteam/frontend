@@ -196,6 +196,7 @@ const SimpleMap = () => {
         <TileLayer
           url={MAP_CONSTANTS.tileLayer.url}
           attribution={MAP_CONSTANTS.tileLayer.attribution}
+          crossOrigin={true} 
         />
         
         {/* Add the location marker component */}
