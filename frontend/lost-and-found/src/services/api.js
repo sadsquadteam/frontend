@@ -12,8 +12,8 @@ const apiRequest = async (endpoint, method = 'GET', data = null, token = null, e
     headers,
     ...(data
       ? {
-          body: data instanceof FormData ? data : JSON.stringify(data),
-        }
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      }
       : {}),
     ...extraConfig,
   };
@@ -34,8 +34,8 @@ const apiRequest = async (endpoint, method = 'GET', data = null, token = null, e
       if (response.status === 401) {
         throw new Error(
           responseData.non_field_errors?.[0] ||
-            responseData.detail ||
-            'Invalid email or password'
+          responseData.detail ||
+          'Invalid email or password'
         );
       }
       if (response.status === 400) {

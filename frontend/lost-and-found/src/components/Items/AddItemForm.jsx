@@ -25,22 +25,55 @@ const AddItemForm = ({
   isModal = false, 
   coordinates = null,
   onItemCreated = null,
-  onCancel = null 
+  onCancel = null,
+  itemToEdit = null,  
+  isEditMode = false  
 }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    tags: [],
-    status: 'found',
-    latitude: coordinates ? coordinates[0].toString() : '',
-    longitude: coordinates ? coordinates[1].toString() : '',
-    image: null,
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState(() => {
+    if (isEditMode && itemToEdit) {
+      // Map tag IDs back to labels for display
+      const tagLabels = itemToEdit.tags?.map(tag => {
+        if (typeof tag === 'object' && tag.name) return tag.name;
+        if (typeof tag === 'number') {
+          // Reverse lookup from TAG_LABEL_TO_ID
+          return Object.keys(TAG_LABEL_TO_ID).find(
+            key => TAG_LABEL_TO_ID[key] === tag
+          ) || 'Other';
+        }
+        return tag;
+      }).filter(Boolean) || [];
+
+      return {
+        title: itemToEdit.title || '',
+        description: itemToEdit.description || '',
+        tags: tagLabels,
+        status: itemToEdit.status || 'found',
+        latitude: itemToEdit.latitude?.toString() || '',
+        longitude: itemToEdit.longitude?.toString() || '',
+        image: null, // Can't pre-fill file input
+      };
+    }
+    return {
+      title: '',
+      description: '',
+      tags: [],
+      status: 'found',
+      latitude: coordinates ? coordinates[0].toString() : '',
+      longitude: coordinates ? coordinates[1].toString() : '',
+      image: null,
+    };
   });
-  const [selectedTag, setSelectedTag] = useState('');
+
+  const [selectedTag, setSelectedTag] = useState(() => {
+    if (isEditMode && itemToEdit && formData.tags.length > 0) {
+      return formData.tags[0];
+    }
+    return '';
+  });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,25 +146,32 @@ const AddItemForm = ({
 
     setSubmitting(true);
     try {
-      await itemsAPI.createItem(payload);
-      
-      if (isModal && onItemCreated) {
-        onItemCreated(formData);
+      if (isEditMode && itemToEdit) {
+        // Update existing item
+        await itemsAPI.updateItem(itemToEdit.id, payload);
+        navigate(`/items/${itemToEdit.id}`);
       } else {
-        setFormData({
-          title: '',
-          description: '',
-          tags: [],
-          status: 'found',
-          latitude: '',
-          longitude: '',
-          image: null,
-        });
-        setSelectedTag('');
-        navigate('/items');
+        // Create new item
+        await itemsAPI.createItem(payload);
+        
+        if (isModal && onItemCreated) {
+          onItemCreated(formData);
+        } else {
+          setFormData({
+            title: '',
+            description: '',
+            tags: [],
+            status: 'found',
+            latitude: '',
+            longitude: '',
+            image: null,
+          });
+          setSelectedTag('');
+          navigate('/items');
+        }
       }
     } catch (err) {
-      setError(err.message || 'Failed to create item.');
+      setError(err.message || `Failed to ${isEditMode ? 'update' : 'create'} item.`);
     } finally {
       setSubmitting(false);
     }
@@ -157,11 +197,13 @@ const AddItemForm = ({
         <div className="add-item-card" style={{ boxShadow: 'none', margin: '0' }}>
           <div style={{ padding: '20px' }}>
             <h3 style={{ marginBottom: '15px', textAlign: 'center' }}>
-              Add New Item
+              {isEditMode ? 'Edit Item' : 'Add New Item'}
               <br />
-              <small style={{ fontSize: '14px', color: '#666' }}>
-                Location: {coordinates[0].toFixed(6)}, {coordinates[1].toFixed(6)}
+              {coordinates && (
+                <small style={{ fontSize: '14px', color: '#666' }}>
+                  Location: {coordinates[0].toFixed(6)}, {coordinates[1].toFixed(6)}
               </small>
+              )}
             </h3>
             
             {error && <div className="error-message">{error}</div>}
@@ -264,7 +306,7 @@ const AddItemForm = ({
                     flex: 1
                   }}
                 >
-                  {submitting ? 'Adding...' : 'Add Item'}
+                  {submitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Item' : 'Add Item')}
                 </button>
               </div>
             </div>
@@ -281,12 +323,12 @@ const AddItemForm = ({
           <button
             type="button"
             className="top-icon"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(isEditMode ? `/items/${itemToEdit.id}` : '/dashboard')}
           >
             <img src={BackIcon} alt="back" />
           </button>
 
-          <h1 className="header-title">Add New Item</h1>
+          <h1 className="header-title">{isEditMode ? 'Edit Item' : 'Add New Item'}</h1>
 
           <button
             type="button"
@@ -299,7 +341,7 @@ const AddItemForm = ({
         </div>
 
         <p className="subtitle">
-          Fill in the details below to add a new item
+          {isEditMode ? 'Update the details below' : 'Fill in the details below to add a new item'}
         </p>
 
         {error && <div className="error-message">{error}</div>}

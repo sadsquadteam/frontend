@@ -1,4 +1,3 @@
-// src/components/Items/ItemDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/items.css';
@@ -41,7 +40,7 @@ const ItemDetail = () => {
   };
 
   const handleEdit = () => {
-    // Next step: navigate to an edit page or reuse AddItemForm in "edit" mode
+    // Next step: reuse AddItemForm in "edit" mode
     navigate(`/items/${id}/edit`);
   };
 

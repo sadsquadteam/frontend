@@ -11,6 +11,7 @@ import ItemDetailPage from "./pages/Items/ItemDetailPage";
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import AddItemPage from "./pages/Items/AddItemPage"; 
+import EditItemPage from './pages/Items/EditItemPage';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         {/* Items Pages with Same Layout */}
         <Route path="/items" element={<ItemsPage />} />
         <Route path="/items/:id" element={<ItemDetailPage />} />
+        <Route path="/items/:id/edit" element={<EditItemPage />} />
         
         {/* Add Item Page */}
         <Route path="/add-item" element={<AddItemPage />} />
