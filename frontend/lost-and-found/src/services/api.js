@@ -1,129 +1,77 @@
-const API_BASE_URL = 'http://localhost:8000/api'; 
+const API_BASE_URL = 'http://localhost:8000/api';
 
-// Helper function for making API requests
-const apiRequest = async (endpoint, method = 'GET', data = null, token = null) => {
+const apiRequest = async (endpoint, method = 'GET', data = null, token = null, extraConfig = {}) => {
     const headers = {
-        'Content-Type': 'application/json',
+        ...(data instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(extraConfig.headers || {}),
     };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     const config = {
         method,
         headers,
+        ...(data
+            ? {
+                body: data instanceof FormData ? data : JSON.stringify(data),
+            }
+            : {}),
+        ...extraConfig,
     };
 
-    if (data) {
-        config.body = JSON.stringify(data);
-    }
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const clone = response.clone();
 
+    let responseData;
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-        const responseClone = response.clone();
-        // Try to parse error response
-        let responseData;
-        try {
-            responseData = await response.json();
-        } catch (parseError) {
-            // If JSON parsing fails, read as text
-            const textResponse = await responseClone.text();
-            console.log('Non-JSON response:', textResponse);
-            responseData = { detail: `Server returned non-JSON: ${textResponse.substring(0, 100)}` };
-        }
-        
-        if (!response.ok) {
-            // For login endpoint, provide more specific error messages
-            if (endpoint === '/users/login/') {
-                if (response.status === 401) {
-                    throw new Error(
-                        responseData.non_field_errors?.[0] || 
-                        responseData.detail || 
-                        'Invalid email or password'
-                    );
-                } else if (response.status === 400) {
-                    // Handle validation errors
-                    const errorMessages = [];
-                    if (responseData.email) errorMessages.push(responseData.email.join(', '));
-                    if (responseData.password) errorMessages.push(responseData.password.join(', '));
-                    if (responseData.non_field_errors) errorMessages.push(responseData.non_field_errors.join(', '));
-                    
-                    throw new Error(
-                        errorMessages.join(' ') || 
-                        'Please check your input'
-                    );
-                }
+        responseData = await response.json();
+    } catch {
+        const text = await clone.text();
+        responseData = { detail: text.slice(0, 200) || 'No JSON body' };
+    }
+
+    if (!response.ok) {
+        if (endpoint === '/users/login/') {
+            if (response.status === 401) {
+                throw new Error(
+                    responseData.non_field_errors?.[0] ||
+                    responseData.detail ||
+                    'Invalid email or password'
+                );
             }
-            
-            // For other endpoints
-            throw new Error(
-                responseData.detail || 
-                responseData.message || 
-                responseData.non_field_errors?.[0] ||
-                Object.values(responseData).flat().join(', ') ||
-                `API request failed with status ${response.status}`
-            );
+            if (response.status === 400) {
+                const msgs = [];
+                if (responseData.email) msgs.push(responseData.email.join(', '));
+                if (responseData.password) msgs.push(responseData.password.join(', '));
+                if (responseData.non_field_errors)
+                    msgs.push(responseData.non_field_errors.join(', '));
+                throw new Error(msgs.join(' ') || 'Please check your input');
+            }
         }
-        
-        return responseData;
-    } catch (error) {
-        console.error(`API Error (${endpoint}):`, error);
-        throw error;
+
+        const msg =
+            responseData.detail ||
+            responseData.message ||
+            responseData.non_field_errors?.[0] ||
+            (typeof responseData === 'object'
+                ? Object.values(responseData).flat().join(', ')
+                : '') ||
+            `API request failed with status ${response.status}`;
+        throw new Error(msg);
     }
+
+    return responseData;
 };
 
-// Authentication API calls
-export const authAPI = {
-    // Step 1: Send email to get OTP
-    registerStep1: async (email) => {
-        return await apiRequest('/users/register/', 'POST', { email });
-    },
 
-    // Step 2: Verify OTP and set password
-    registerStep2: async (email, otp, password) => {
-        return await apiRequest('/users/verify/', 'POST', { 
-            email, 
-            otp, 
-            password 
-        });
-    },
-
-    // Login
-    login: async (email, password) => {
-        return await apiRequest('/users/login/', 'POST', { email, password });
-    },
-
-    // Get user profile
-    getProfile: async (token) => {
-        return await apiRequest('/users/profile/', 'GET', null, token);
-    },
-
-    // Logout
-    logout: async (refreshToken, accessToken) => {
-        return await apiRequest('/users/logout/', 'POST', { refresh: refreshToken }, accessToken);
-    },
-
-    // Refresh token
-    refreshToken: async (refreshToken) => {
-        return await apiRequest('/users/refresh/', 'POST', { refresh: refreshToken });
-    }
-};
-
-// Token management helpers
 export const tokenService = {
-    setTokens: (accessToken, refreshToken) => {
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
+    setTokens: (access, refresh) => {
+        localStorage.setItem('access_token', access);
+        localStorage.setItem('refresh_token', refresh);
     },
 
-    getAccessToken: () => {
-        return localStorage.getItem('access_token');
-    },
+    getAccessToken: () => localStorage.getItem('access_token'),
 
-    getRefreshToken: () => {
-        return localStorage.getItem('refresh_token');
-    },
+    getRefreshToken: () => localStorage.getItem('refresh_token'),
 
     clearTokens: () => {
         localStorage.removeItem('access_token');
@@ -131,7 +79,90 @@ export const tokenService = {
         localStorage.removeItem('user');
     },
 
-    isAuthenticated: () => {
-        return !!localStorage.getItem('access_token');
+    isAuthenticated: () => !!localStorage.getItem('access_token'),
+};
+
+export const authAPI = {
+    registerStep1: (email) =>
+        apiRequest('/users/register/', 'POST', { email }),
+
+    registerStep2: (email, otp, password) =>
+        apiRequest('/users/verify/', 'POST', { email, otp, password }),
+
+    login: async (email, password) => {
+        const data = await apiRequest('/users/login/', 'POST', { email, password });
+        if (data.access && data.refresh) {
+            tokenService.setTokens(data.access, data.refresh);
+        }
+        if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        return data;
+    },
+
+    getProfile: (token) =>
+        apiRequest('/users/profile/', 'GET', null, token),
+
+    logout: (refreshToken, accessToken) =>
+        apiRequest('/users/logout/', 'POST', { refresh: refreshToken }, accessToken),
+
+    refreshToken: (refreshToken) =>
+        apiRequest('/users/refresh/', 'POST', { refresh: refreshToken }),
+};
+
+const withAuth = async (requestFn) => {
+    const access = tokenService.getAccessToken();
+    const refresh = tokenService.getRefreshToken();
+
+    if (!access) throw new Error('Not authenticated');
+
+    try {
+        return await requestFn(access);
+    } catch (err) {
+        const msg = String(err.message || '');
+        if (!refresh || (!msg.includes('Token is invalid') && !msg.includes('expired'))) {
+            throw err;
+        }
+
+        const data = await authAPI.refreshToken(refresh);
+        if (!data.access) throw err;
+        tokenService.setTokens(data.access, refresh);
+        return await requestFn(data.access);
     }
+};
+
+export const itemsAPI = {
+    getAllItems: (filters = {}) => {
+        let url = '/items/';
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([k, v]) => {
+            if (v) params.append(k, v);
+        });
+        if (params.toString()) url += `?${params.toString()}`;
+        return apiRequest(url, 'GET', null, null);
+    },
+
+    getItemById: (id) =>
+        apiRequest(`/items/${id}/`, 'GET', null, null),
+
+    createItem: (itemData) =>
+        withAuth((token) =>
+            apiRequest('/items/', 'POST', itemData, token)
+        ),
+
+    updateItem: (id, itemData) =>
+        withAuth((token) =>
+            apiRequest(`/items/${id}/`, 'PUT', itemData, token)
+        ),
+
+    deleteItem: (id) =>
+        withAuth((token) =>
+            apiRequest(`/items/${id}/`, 'DELETE', null, token)
+        ),
+
+    getItemsByStatus: (status) =>
+        itemsAPI.getAllItems({ status }),
+
+    getItemsByTag: (tag) =>
+        itemsAPI.getAllItems({ tag }),
 };

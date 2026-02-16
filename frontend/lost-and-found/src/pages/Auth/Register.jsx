@@ -140,9 +140,9 @@ const Register = () => {
             if (nextInput) nextInput.focus();
         }
         
-        if (newOtp.every(digit => digit !== "") && index === 5) {
-            verifyOtp();
-        }
+        // if (newOtp.every(digit => digit !== "")) {
+        //     verifyOtp();
+        // }
     };
 
     const handleOtpKeyDown = (e, index) => {
@@ -161,9 +161,7 @@ const Register = () => {
             const newOtp = [...otp];
             
             digits.forEach((digit, index) => {
-                if (index < 6) {
-                    newOtp[index] = digit;
-                }
+                newOtp[index] = digit;
             });
             
             setOtp(newOtp);
@@ -198,6 +196,11 @@ const Register = () => {
 
     const verifyOtp = async () => {
         const otpString = otp.join("");
+
+        if (otpString.length !== 6) {
+            setOtpError("Please enter complete 6-digit code");
+            return;
+        }
 
         setLoading(true);
         setOtpError("");
