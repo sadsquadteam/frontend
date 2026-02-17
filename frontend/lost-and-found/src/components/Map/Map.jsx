@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -16,8 +16,8 @@ import {
 } from './MapComponents';
 
 // Custom component to handle geolocation
-const LocationMarker = () => {
-  const [position, setPosition] = useState(null);
+const LocationMarker = ({ onLocationFound, userLocation }) => {
+  const [position, setPosition] = useState(userLocation || null);
   const [error, setError] = useState(null);
   const map = useMap();
 
@@ -31,6 +31,9 @@ const LocationMarker = () => {
       const { latitude, longitude } = pos.coords;
       const userPosition = [latitude, longitude];
       setPosition(userPosition);
+      if (onLocationFound) {
+        onLocationFound(userPosition);
+      }
     };
 
     const errorHandler = (err) => {
@@ -38,11 +41,14 @@ const LocationMarker = () => {
       console.error(err);
     };
 
-    navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-    });
+    // Only get initial position if we don't already have one from props
+    if (!userLocation) {
+      navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      });
+    }
 
     const watchId = navigator.geolocation.watchPosition(successHandler, errorHandler, {
       enableHighAccuracy: true,
@@ -53,7 +59,7 @@ const LocationMarker = () => {
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
-  }, [map]);
+  }, [map, onLocationFound, userLocation]);
 
   return position === null ? null : (
     <Marker 
@@ -64,9 +70,21 @@ const LocationMarker = () => {
         iconSize: [26, 26],
         popupAnchor: [0, -13]
       })}
-    >
-    </Marker>
+    />
   );
+};
+
+// Custom component to handle map center updates
+const MapController = ({ center, zoom }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (center) {
+      map.setView(center, zoom || map.getZoom());
+    }
+  }, [center, map, zoom]);
+  
+  return null;
 };
 
 const SimpleMap = ({ searchQuery = "", user }) => {
@@ -75,6 +93,8 @@ const SimpleMap = ({ searchQuery = "", user }) => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [locationStatus, setLocationStatus] = useState('loading'); // 'loading', 'success', 'error'
+  const [userLocation, setUserLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState(null);
   
   const {
     holdProgress,
@@ -95,12 +115,47 @@ const SimpleMap = ({ searchQuery = "", user }) => {
     } else {
       // Just test if geolocation works
       navigator.geolocation.getCurrentPosition(
-        () => setLocationStatus('success'),
+        (pos) => {
+          setLocationStatus('success');
+          const { latitude, longitude } = pos.coords;
+          setUserLocation([latitude, longitude]);
+        },
         () => setLocationStatus('error'),
         { timeout: 3000 }
       );
     }
   }, []);
+
+  const handleLocationFound = (position) => {
+    setUserLocation(position);
+    setLocationStatus('success');
+  };
+
+  const goToMyLocation = () => {
+    if (userLocation) {
+      setMapCenter(userLocation);
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const newPosition = [latitude, longitude];
+          setUserLocation(newPosition);
+          setMapCenter(newPosition);
+          setLocationStatus('success');
+        },
+        (err) => {
+          setLocationStatus('error');
+          console.error('Error getting location:', err);
+          alert('Unable to get your location. Please check your location permissions.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+    }
+  };
 
   const handleMapMouseDown = (e) => {
     const { lat, lng } = e.latlng;
@@ -170,14 +225,11 @@ const SimpleMap = ({ searchQuery = "", user }) => {
   return (
     <div className="map-wrapper" style={{ position: 'relative', height: '100vh', width: '100%' }}>
       <MapContainer
-        center={MAP_CONSTANTS.sharifCenter}
+        center={mapCenter || MAP_CONSTANTS.sharifCenter}
         zoom={17}
         scrollWheelZoom
         keyboard={false}
-        // maxBounds={MAP_CONSTANTS.bounds}
         maxBoundsViscosity={1.0}
-        // minZoom={17}
-        // maxZoom={18}
         className="leaflet-container"
         style={{ height: '100%', width: '100%' }}
         whenReady={(map) => {
@@ -200,7 +252,13 @@ const SimpleMap = ({ searchQuery = "", user }) => {
         />
         
         {/* Add the location marker component */}
-        <LocationMarker />
+        <LocationMarker 
+          onLocationFound={handleLocationFound}
+          userLocation={userLocation}
+        />
+        
+        {/* Map controller to handle programmatic center changes */}
+        <MapController center={mapCenter} zoom={17} />
         
         {markers.map((marker) => (
           <Marker 
@@ -212,6 +270,44 @@ const SimpleMap = ({ searchQuery = "", user }) => {
         ))}
       </MapContainer>
       
+      {/* Go to My Location Button */}
+      <button
+        onClick={goToMyLocation}
+        style={{
+          position: 'absolute',
+          bottom: '100px',
+          right: '10px',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          padding: '10px',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '40px',
+          height: '40px'
+        }}
+        title="Go to my location"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke={locationStatus === 'error' ? '#ff4444' : '#4285F4'} 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="3" fill={locationStatus === 'error' ? '#ff4444' : '#4285F4'}/>
+        </svg>
+      </button>
+      
       {holdProgress > 0 && holdProgress < 100 && (
         <HoldProgressIndicator progress={holdProgress} />
       )}
@@ -219,9 +315,8 @@ const SimpleMap = ({ searchQuery = "", user }) => {
       <InstructionsPanel markersCount={markers.length} />
       
       {markers.length > 0 && (
-  <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
-)}
-
+        <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
+      )}
       
       {showAddItemModal && pendingMarkerPosition && (
         <AddItemModal
