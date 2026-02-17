@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import L from 'leaflet';
 
 import { itemsAPI } from '../../services/api';
-import { MAP_CONSTANTS, getMarkerIcon } from './mapUtils';
+import { MAP_CONSTANTS, getMarkerIcon, createClusterCustomIcon } from './mapUtils';
 import { useHoldToAddMarker } from './useHoldToAddMarker';
 import {
   HoldProgressIndicator,
@@ -41,7 +44,6 @@ const LocationMarker = ({ onLocationFound, userLocation }) => {
       console.error(err);
     };
 
-    // Only get initial position if we don't already have one from props
     if (!userLocation) {
       navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
         enableHighAccuracy: true,
@@ -87,14 +89,36 @@ const MapController = ({ center, zoom }) => {
   return null;
 };
 
+// Custom component to handle cluster events and dynamic behavior
+const ClusterEventHandler = ({ setCurrentZoom }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    const handleZoomEnd = () => {
+      const zoom = map.getZoom();
+      setCurrentZoom(zoom);
+    };
+    
+    map.on('zoomend', handleZoomEnd);
+    handleZoomEnd();
+    
+    return () => {
+      map.off('zoomend', handleZoomEnd);
+    };
+  }, [map, setCurrentZoom]);
+  
+  return null;
+};
+
 const SimpleMap = ({ searchQuery = "", user }) => {
   const [markers, setMarkers] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [locationStatus, setLocationStatus] = useState('loading'); // 'loading', 'success', 'error'
+  const [locationStatus, setLocationStatus] = useState('loading');
   const [userLocation, setUserLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
+  const [currentZoom, setCurrentZoom] = useState(17);
   
   const {
     holdProgress,
@@ -113,7 +137,6 @@ const SimpleMap = ({ searchQuery = "", user }) => {
       setLocationStatus('error');
       console.log('Geolocation is not supported');
     } else {
-      // Just test if geolocation works
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setLocationStatus('success');
@@ -251,23 +274,58 @@ const SimpleMap = ({ searchQuery = "", user }) => {
           crossOrigin={true} 
         />
         
-        {/* Add the location marker component */}
         <LocationMarker 
           onLocationFound={handleLocationFound}
           userLocation={userLocation}
         />
         
-        {/* Map controller to handle programmatic center changes */}
         <MapController center={mapCenter} zoom={17} />
         
-        {markers.map((marker) => (
-          <Marker 
-            key={marker.id} 
-            position={marker.position}
-            icon={getMarkerIcon(marker.status)}
-            eventHandlers={{ click: () => handleMarkerClick(marker) }}
-          />
-        ))}
+        <ClusterEventHandler setCurrentZoom={setCurrentZoom} />
+
+        {/* Clustered markers with dynamic zoom behavior */}
+        <MarkerClusterGroup
+          key={`cluster-${markers.length}-${currentZoom}`}
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick={true}
+          spiderfyOnMaxZoom={true}
+          removeOutsideVisibleBounds={true}
+          animate={true}
+          animateAddingMarkers={true}
+          disableClusteringAtZoom={18}
+          maxClusterRadius={(zoom) => {
+            // Dynamic cluster radius based on zoom level
+            if (zoom <= 10) return 100;  
+            if (zoom <= 12) return 80;   
+            if (zoom <= 14) return 60;   
+            if (zoom <= 16) return 40;   
+            if (zoom <= 17) return 25;   
+            return 15;  
+          }}
+          iconCreateFunction={createClusterCustomIcon}
+          spiderLegPolylineOptions={{
+            weight: 1.5,
+            color: '#222',
+            opacity: 0.5
+          }}
+          polygonOptions={{
+            opacity: 0,
+            fillOpacity: 0
+          }}
+          chunkedLoading={true}
+          chunkInterval={100}
+          chunkDelay={50}
+        >
+          {markers.map((marker) => (
+            <Marker 
+              key={marker.id} 
+              position={marker.position}
+              icon={getMarkerIcon(marker.status)}
+              eventHandlers={{ click: () => handleMarkerClick(marker) }}
+              status={marker.status}
+            />
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
       
       {/* Go to My Location Button */}
