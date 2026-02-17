@@ -69,7 +69,7 @@ const LocationMarker = () => {
   );
 };
 
-const SimpleMap = () => {
+const SimpleMap = ({ searchQuery = "", user }) => {
   const [markers, setMarkers] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -139,7 +139,7 @@ const SimpleMap = () => {
   useEffect(() => {
     const loadExistingItems = async () => {
       try {
-        const data = await itemsAPI.getAllItems();
+        const data = await itemsAPI.getAllItems({ search: searchQuery });
         const items = data.results || data || [];
         
         const apiMarkers = items.map(item => ({
@@ -156,12 +156,12 @@ const SimpleMap = () => {
         
         setMarkers(apiMarkers);
       } catch (error) {
-        console.error('Failed to load existing items:', error);
+        console.error('Failed to load items:', error);
       }
     };
 
     loadExistingItems();
-  }, []);
+  }, [searchQuery]);
 
   useEffect(() => {
     return cleanup;
@@ -219,8 +219,9 @@ const SimpleMap = () => {
       <InstructionsPanel markersCount={markers.length} />
       
       {markers.length > 0 && (
-        <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
-      )}
+  <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
+)}
+
       
       {showAddItemModal && pendingMarkerPosition && (
         <AddItemModal

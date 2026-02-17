@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Location from '../../assets/images/Location.svg'; 
+import Filter from '../../assets/images/Filter.svg';
 import Category from '../../assets/images/Category.svg';
 import Chatbot from '../../assets/images/Chatbot.svg';
 
@@ -24,10 +25,10 @@ const SidebarNav = ({ isAuthenticated = false , user = null}) => {
       authRequired: false,
     },
     {
-      icon: Chatbot,
-      path: '/chat',
-      active: location.pathname === '/chat',
-      tooltip: 'Chat',
+      icon: Filter,
+      path: '/filter',
+      active: location.pathname === '/filter',
+      tooltip: 'Filter',
       authRequired: true,
     },
   ];

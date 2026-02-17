@@ -52,3 +52,36 @@
   transform: translateY(-1px);
   background: linear-gradient(180deg, #91103d 0%, #fd9dbf 100%);
 }
+
+.search-box{
+  position:relative;
+  width:18rem;
+  margin-right: 2rem;
+}
+
+.search-box input{
+  width:100%;
+  height:2.8rem;
+  border-radius:999px;
+  border:0.15rem solid #CF366B;
+  background:#FFDDE9;
+  font-size:1rem;
+  font-weight:600;
+  color:#CF366B;
+  outline:none;
+}
+
+.search-box input::placeholder{
+  color:#CF366B;
+  opacity:0.6;
+}
+
+.search-box img{
+  position:absolute;
+  right:1.5rem;
+  top:50%;
+  transform:translateY(-50%);
+  width:1.3rem;
+  height:1.3rem;
+  pointer-events:none;
+}
