@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import L from 'leaflet';
 
 import { itemsAPI } from '../../services/api';
-import { MAP_CONSTANTS, getMarkerIcon } from './mapUtils';
+import { MAP_CONSTANTS, getMarkerIcon, createClusterCustomIcon } from './mapUtils';
 import { useHoldToAddMarker } from './useHoldToAddMarker';
 import {
   HoldProgressIndicator,
@@ -16,8 +19,8 @@ import {
 } from './MapComponents';
 
 // Custom component to handle geolocation
-const LocationMarker = () => {
-  const [position, setPosition] = useState(null);
+const LocationMarker = ({ onLocationFound, userLocation }) => {
+  const [position, setPosition] = useState(userLocation || null);
   const [error, setError] = useState(null);
   const map = useMap();
 
@@ -31,6 +34,9 @@ const LocationMarker = () => {
       const { latitude, longitude } = pos.coords;
       const userPosition = [latitude, longitude];
       setPosition(userPosition);
+      if (onLocationFound) {
+        onLocationFound(userPosition);
+      }
     };
 
     const errorHandler = (err) => {
@@ -38,11 +44,13 @@ const LocationMarker = () => {
       console.error(err);
     };
 
-    navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-    });
+    if (!userLocation) {
+      navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      });
+    }
 
     const watchId = navigator.geolocation.watchPosition(successHandler, errorHandler, {
       enableHighAccuracy: true,
@@ -53,7 +61,7 @@ const LocationMarker = () => {
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
-  }, [map]);
+  }, [map, onLocationFound, userLocation]);
 
   return position === null ? null : (
     <Marker 
@@ -64,9 +72,42 @@ const LocationMarker = () => {
         iconSize: [26, 26],
         popupAnchor: [0, -13]
       })}
-    >
-    </Marker>
+    />
   );
+};
+
+// Custom component to handle map center updates
+const MapController = ({ center, zoom }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (center) {
+      map.setView(center, zoom || map.getZoom());
+    }
+  }, [center, map, zoom]);
+  
+  return null;
+};
+
+// Custom component to handle cluster events and dynamic behavior
+const ClusterEventHandler = ({ setCurrentZoom }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    const handleZoomEnd = () => {
+      const zoom = map.getZoom();
+      setCurrentZoom(zoom);
+    };
+    
+    map.on('zoomend', handleZoomEnd);
+    handleZoomEnd();
+    
+    return () => {
+      map.off('zoomend', handleZoomEnd);
+    };
+  }, [map, setCurrentZoom]);
+  
+  return null;
 };
 
 const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
@@ -74,7 +115,10 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [locationStatus, setLocationStatus] = useState('loading'); // 'loading', 'success', 'error'
+  const [locationStatus, setLocationStatus] = useState('loading');
+  const [userLocation, setUserLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState(null);
+  const [currentZoom, setCurrentZoom] = useState(17);
   
   const {
     holdProgress,
@@ -93,14 +137,48 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
       setLocationStatus('error');
       console.log('Geolocation is not supported');
     } else {
-      // Just test if geolocation works
       navigator.geolocation.getCurrentPosition(
-        () => setLocationStatus('success'),
+        (pos) => {
+          setLocationStatus('success');
+          const { latitude, longitude } = pos.coords;
+          setUserLocation([latitude, longitude]);
+        },
         () => setLocationStatus('error'),
         { timeout: 3000 }
       );
     }
   }, []);
+
+  const handleLocationFound = (position) => {
+    setUserLocation(position);
+    setLocationStatus('success');
+  };
+
+  const goToMyLocation = () => {
+    if (userLocation) {
+      setMapCenter(userLocation);
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const newPosition = [latitude, longitude];
+          setUserLocation(newPosition);
+          setMapCenter(newPosition);
+          setLocationStatus('success');
+        },
+        (err) => {
+          setLocationStatus('error');
+          console.error('Error getting location:', err);
+          alert('Unable to get your location. Please check your location permissions.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+    }
+  };
 
   const handleMapMouseDown = (e) => {
     const { lat, lng } = e.latlng;
@@ -181,14 +259,11 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
   return (
     <div className="map-wrapper" style={{ position: 'relative', height: '100vh', width: '100%' }}>
       <MapContainer
-        center={MAP_CONSTANTS.sharifCenter}
+        center={mapCenter || MAP_CONSTANTS.sharifCenter}
         zoom={17}
         scrollWheelZoom
         keyboard={false}
-        // maxBounds={MAP_CONSTANTS.bounds}
         maxBoundsViscosity={1.0}
-        // minZoom={17}
-        // maxZoom={18}
         className="leaflet-container"
         style={{ height: '100%', width: '100%' }}
         whenReady={(map) => {
@@ -210,18 +285,97 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
           crossOrigin={true} 
         />
         
-        {/* Add the location marker component */}
-        <LocationMarker />
+        <LocationMarker 
+          onLocationFound={handleLocationFound}
+          userLocation={userLocation}
+        />
         
-        {markers.map((marker) => (
-          <Marker 
-            key={marker.id} 
-            position={marker.position}
-            icon={getMarkerIcon(marker.status)}
-            eventHandlers={{ click: () => handleMarkerClick(marker) }}
-          />
-        ))}
+        <MapController center={mapCenter} zoom={17} />
+        
+        <ClusterEventHandler setCurrentZoom={setCurrentZoom} />
+
+        {/* Clustered markers with dynamic zoom behavior */}
+        <MarkerClusterGroup
+          key={`cluster-${markers.length}-${currentZoom}`}
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick={true}
+          spiderfyOnMaxZoom={true}
+          removeOutsideVisibleBounds={true}
+          animate={true}
+          animateAddingMarkers={true}
+          disableClusteringAtZoom={18}
+          maxClusterRadius={(zoom) => {
+            // Dynamic cluster radius based on zoom level
+            if (zoom <= 10) return 100;  
+            if (zoom <= 12) return 80;   
+            if (zoom <= 14) return 60;   
+            if (zoom <= 16) return 40;   
+            if (zoom <= 17) return 25;   
+            return 15;  
+          }}
+          iconCreateFunction={createClusterCustomIcon}
+          spiderLegPolylineOptions={{
+            weight: 1.5,
+            color: '#222',
+            opacity: 0.5
+          }}
+          polygonOptions={{
+            opacity: 0,
+            fillOpacity: 0
+          }}
+          chunkedLoading={true}
+          chunkInterval={100}
+          chunkDelay={50}
+        >
+          {markers.map((marker) => (
+            <Marker 
+              key={marker.id} 
+              position={marker.position}
+              icon={getMarkerIcon(marker.status)}
+              eventHandlers={{ click: () => handleMarkerClick(marker) }}
+              status={marker.status}
+            />
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
+      
+      {/* Go to My Location Button */}
+      <button
+        onClick={goToMyLocation}
+        style={{
+          position: 'absolute',
+          bottom: '100px',
+          right: '10px',
+          zIndex: 1000,
+          backgroundColor: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          padding: '10px',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '40px',
+          height: '40px'
+        }}
+        title="Go to my location"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke={locationStatus === 'error' ? '#ff4444' : '#4285F4'} 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="3" fill={locationStatus === 'error' ? '#ff4444' : '#4285F4'}/>
+        </svg>
+      </button>
       
       {holdProgress > 0 && holdProgress < 100 && (
         <HoldProgressIndicator progress={holdProgress} />
@@ -230,9 +384,8 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
       <InstructionsPanel markersCount={markers.length} />
       
       {markers.length > 0 && (
-  <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
-)}
-
+        <ClearAllButton markersCount={markers.length} onClear={clearAllMarkers} />
+      )}
       
       {showAddItemModal && pendingMarkerPosition && (
         <AddItemModal
