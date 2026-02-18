@@ -1,0 +1,149 @@
+.filter-overlay {
+  position: fixed;
+  top: 72px;
+  left: 52px;
+  height: calc(100vh - 72px);
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.filter-modal {
+  pointer-events: all;
+  background: #eff5ff;
+  width: 30rem;
+  height: 100%;
+  border-radius: 0 1.5rem 1.5rem 0;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #132440;
+}
+
+.filter-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.back-img {
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+}
+
+.apply-img {
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+}
+
+.filter-subtitle {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0.8rem 0 1.5rem;
+  color: #132440a9;
+}
+
+.section {
+  margin-bottom: 0.5rem;
+}
+
+.section h4 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  justify-self: start;
+  margin-left: 0.2rem;
+  color: #132440;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+.tag-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 0.15rem solid var(--tag-color);
+  background: color-mix(in srgb, var(--tag-color) 12%, #eff5ff);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--tag-color);
+}
+
+
+.tag-pill img {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.tag-pill.active {
+  border-style:dashed;
+}
+
+.tag-pill:hover {
+  background: color-mix(in srgb, var(--tag-color) 20%, #eff5ff);
+}
+
+.status-row {
+  display: flex;
+  gap: 0.7rem;
+  width: 65%;
+}
+
+.status-pill {
+  flex: 1;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 0.15rem solid var(--status-color);
+  color: var(--status-color);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.status-pill.active {
+  border-style:dashed;
+}
+
+.status-pill:hover {
+  background: color-mix(in srgb, var(--status-color) 20%, #eff5ff);
+}
+
+/* Colors */
+.brown { --tag-color: #812900; }
+.purple { --tag-color: #7C01AC; }
+.cyan { --tag-color: #00B0A4; }
+.orange { --tag-color: #DD9000; }
+.blue { --tag-color:  #003FB3; }
+.gray { --tag-color:#636363; }
+.black { --tag-color:  #000000; }
+.red { --tag-color:  #C70003; }
+.green { --tag-color:  #009607; }
+.pink { --tag-color:  #C60094; }
+.violet { --tag-color: #3C3C3C; }
+.light-blue {--status-color: #16476A; background: #D1E6FD ;}
+.dark-pink {--status-color: #CF366B; background: #fec5da;}
+.light-green {--status-color: #3B9797; background: #C9FFFF;}
+
+@media (max-width: 1400px) {
+  .filter-modal {
+    transform: scale(0.9);
+    transform-origin: top right;
+    overflow: hidden;
+    height: 100vh;
+  }
+}

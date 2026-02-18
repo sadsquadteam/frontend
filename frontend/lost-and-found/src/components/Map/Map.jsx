@@ -69,7 +69,7 @@ const LocationMarker = () => {
   );
 };
 
-const SimpleMap = ({ searchQuery = "", user }) => {
+const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
   const [markers, setMarkers] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -137,31 +137,42 @@ const SimpleMap = ({ searchQuery = "", user }) => {
   };
 
   useEffect(() => {
-    const loadExistingItems = async () => {
-      try {
-        const data = await itemsAPI.getAllItems({ search: searchQuery });
-        const items = data.results || data || [];
-        
-        const apiMarkers = items.map(item => ({
-          id: item.id,
-          position: [item.latitude, item.longitude],
-          title: item.title,
-          description: item.description,
-          status: item.status,
-          timestamp: item.created_at || new Date().toLocaleTimeString(),
-          image: item.image,
-          user: item.user,
-          ...item
-        }));
-        
-        setMarkers(apiMarkers);
-      } catch (error) {
-        console.error('Failed to load items:', error);
-      }
-    };
+  const loadExistingItems = async () => {
+    try {
+      const query = {
+        search: searchQuery,
+      };
 
-    loadExistingItems();
-  }, [searchQuery]);
+      if (filters.status) {
+        query.status = filters.status;
+      }
+
+      if (filters.tags?.length) {
+        query['tags__title'] = filters.tags.join(',');
+      }
+      
+      const data = await itemsAPI.getAllItems(query);
+      const items = data.results || data || [];
+      const apiMarkers = items.map(item => ({
+        id: item.id,
+        position: [item.latitude, item.longitude],
+        title: item.title,
+        description: item.description,
+        status: item.status,
+        timestamp: item.created_at,
+        ...item
+      }));
+
+      setMarkers(apiMarkers);
+
+    } catch (error) {
+      console.error('Failed to load items:', error);
+    }
+  };
+
+  loadExistingItems();
+}, [searchQuery, filters]);
+
 
   useEffect(() => {
     return cleanup;

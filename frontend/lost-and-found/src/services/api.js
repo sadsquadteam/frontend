@@ -139,6 +139,7 @@ export const itemsAPI = {
       if (v) params.append(k, v);
     });
     if (params.toString()) url += `?${params.toString()}`;
+    console.log("FINAL URL:", url);
     return apiRequest(url, 'GET', null, null);
   },
 
