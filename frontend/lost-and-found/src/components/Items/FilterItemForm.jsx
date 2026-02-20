@@ -57,8 +57,8 @@ const FilterItemForm = ({ isOpen, onClose, onApply }) => {
   };
 
   return (
-    <div className="filter-overlay">
-      <div className="filter-modal">
+    <div className={`filter-side-menu ${isOpen ? 'open' : ''}`}>
+      <div className="filter-side-menu-content">
         <div className="filter-header">
           <img 
             src={Back} 
