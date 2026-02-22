@@ -7,7 +7,7 @@ import logoText from '../../assets/images/logo-text.svg';
 import logOutIcon from '../../assets/images/logOut.svg';
 import { authAPI, tokenService } from '../../services/api'; 
 
-const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser = null }) => {
+const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser = null, onApplyFilter}) => {
   const navigate = useNavigate();
   const [localUser, setLocalUser] = useState(propUser);
   const [localIsAuthenticated, setLocalIsAuthenticated] = useState(propIsAuthenticated);
@@ -64,7 +64,7 @@ const Sidebar = ({ isAuthenticated: propIsAuthenticated = false, user: propUser 
         <img src={logoText} alt="Logo Text" />
       </div>
       
-      <SidebarNav isAuthenticated={isAuthenticated} user={user} />
+      <SidebarNav isAuthenticated={isAuthenticated} user={user} onApplyFilter={onApplyFilter}/>
       
       {isAuthenticated && (
         <button

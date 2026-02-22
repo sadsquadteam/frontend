@@ -14,8 +14,13 @@ const TAG_LABEL_TO_ID = {
   Accessory: 4,
   Card: 5,
   Key: 6,
+<<<<<<< HEAD
   'Book/Paper': 7,
   Stationary: 8,
+=======
+  'Book/paper': 7,
+  Stationery: 8,
+>>>>>>> development
   Sports: 9,
   'Personal care': 10,
   Other: 11,
@@ -184,8 +189,13 @@ const AddItemForm = ({
     'Accessory',
     'Card',
     'Key',
+<<<<<<< HEAD
     'Book/Paper',
     'Stationary',
+=======
+    'Book/paper',
+    'Stationery',
+>>>>>>> development
     'Sports',
     'Personal care',
     'Other',

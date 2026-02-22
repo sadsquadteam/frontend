@@ -11,6 +11,8 @@ const Dashboard = () => {
   
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({});
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -77,14 +79,26 @@ const Dashboard = () => {
 
   return (
     <div className="layout">
-      <Sidebar isAuthenticated={isAuthenticated} user={user} />
+      <Sidebar 
+        isAuthenticated={isAuthenticated} 
+        user={user}
+        onApplyFilter={setFilters}
+      />
       
       <div className="main">
-        <Header isAuthenticated={isAuthenticated} user={user}>
+        <Header 
+          isAuthenticated={isAuthenticated} 
+          user={user}
+          onSearch={setSearchQuery}
+        >
         </Header>
         
         <main className="content">
-          <SimpleMap />
+          <SimpleMap
+            searchQuery={searchQuery}
+            filters={filters}
+            user={user}
+          />
         </main>
       </div>
     </div>

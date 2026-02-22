@@ -1,18 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../UI';
+import Search from '../../assets/images/Search.svg';
 import './Header.css';
 
 const Header = ({ 
   title = "Lost&Found",
   isAuthenticated = false, 
-  user = null 
+  user = null,
+  onSearch
 }) => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   if (title === "Add New Item") {
     return <header className="header" />;
   }
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    onSearch && onSearch(value);
+  };
 
   /* ===== GUEST HEADER ===== */
   if (!isAuthenticated) {
@@ -37,15 +45,17 @@ const Header = ({
     );
   }
 
-  const handleAddNewClick = () => {
-    navigate('/add-item', { state: { user } });
-  };
-
   return (
     <header className="header">
-      <Button variant="accent" onClick={handleAddNewClick}>
-        Add new item
-      </Button>
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={handleChange}
+        />
+        <img src={Search} alt="search" />
+      </div>
     </header>
   );
 };

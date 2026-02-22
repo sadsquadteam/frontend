@@ -12,7 +12,10 @@ import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import AddItemPage from "./pages/Items/AddItemPage"; 
 import EditItemPage from './pages/Items/EditItemPage';
+<<<<<<< HEAD
 
+=======
+>>>>>>> development
 
 export default function App() {
   return (
