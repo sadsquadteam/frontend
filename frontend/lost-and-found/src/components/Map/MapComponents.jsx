@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AddItemForm from '../Items/AddItemForm';
-import { itemsAPI } from '../../services/api';
+import CommentsSection from '../Items/CommentsSection';
+import ReportDialog from '../Items/ReportDialog';
+import { itemsAPI, reportsAPI, tokenService, reportedService } from '../../services/api';
 import { getCardColors } from './mapUtils';
 
 // Progress Indicator Component
@@ -139,9 +141,60 @@ export const AddItemModal = ({ position, onItemCreated, onClose }) => (
 
 // Side Menu Component
 export const SideMenu = ({ isOpen, onClose, item, onOpenFullScreen }) => {
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportedItemIds, setReportedItemIds] = useState(() => new Set());
+  const [statusMessage, setStatusMessage] = useState('');
+  const isAuthenticated = tokenService.isAuthenticated();
+  const currentItemId = Number(item?.id ?? -1);
+  const hasReportedItem = reportedItemIds.has(currentItemId) || reportedService.hasReportedItem(currentItemId);
+
+  useEffect(() => {
+    setStatusMessage('');
+    setIsReportDialogOpen(false);
+  }, [currentItemId]);
+
   if (!item) return null;
 
   const colorClass = getCardColors(item.id);
+
+  const handleItemReport = async (reason) => {
+    if (!isAuthenticated) {
+      setStatusMessage('Please log in to report this item.');
+      window.location.href = '/login';
+      return;
+    }
+
+    if (hasReportedItem) {
+      throw new Error('You have already reported this item in this session.');
+    }
+
+    setStatusMessage('');
+    setIsSubmittingReport(true);
+
+    try {
+      await reportsAPI.createItemReport({ item: Number(item.id), reason });
+      reportedService.markItemReported(item.id);
+      setReportedItemIds((prev) => new Set([...prev, currentItemId]));
+      setStatusMessage('Report submitted successfully.');
+
+      try {
+        await itemsAPI.getItemById(item.id);
+        setTimeout(() => setStatusMessage(''), 1800);
+      } catch (refreshErr) {
+        if (refreshErr.status === 404) {
+          setStatusMessage('This item was removed after report threshold. Redirecting...');
+          setTimeout(() => {
+            window.location.href = '/items';
+          }, 900);
+          return;
+        }
+        throw refreshErr;
+      }
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
 
   return (
     <div style={{
@@ -278,7 +331,7 @@ export const SideMenu = ({ isOpen, onClose, item, onOpenFullScreen }) => {
           <button
             onClick={onOpenFullScreen}
             style={{
-              flex: 1,
+              flex: 1.2,
               padding: '12px',
               background: `linear-gradient(135deg, ${colorClass.colors[0]}, ${colorClass.colors[1]})`,
               color: 'white',
@@ -297,15 +350,75 @@ export const SideMenu = ({ isOpen, onClose, item, onOpenFullScreen }) => {
           >
             <i className="fas fa-expand"></i> Open in Full Screen
           </button>
+          <button
+            onClick={() => {
+              if (!isAuthenticated) {
+                setStatusMessage('Please log in to report this item.');
+                window.location.href = '/login';
+                return;
+              }
+              setIsReportDialogOpen(true);
+            }}
+            disabled={hasReportedItem || isSubmittingReport}
+            style={{
+              flex: 1,
+              padding: '12px',
+              background: hasReportedItem ? '#8f95a1' : '#CF366B',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: hasReportedItem ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              opacity: isSubmittingReport ? 0.8 : 1
+            }}
+          >
+            <i className="fas fa-flag"></i> {hasReportedItem ? 'Reported' : 'Report'}
+          </button>
+        </div>
+
+        {statusMessage && (
+          <p style={{ marginTop: '10px', color: '#16476A', fontSize: '13px', fontWeight: '500' }}>
+            {statusMessage}
+          </p>
+        )}
+
+        {/* Comments */}
+        <div style={{ marginTop: '24px' }}>
+          <CommentsSection itemId={item.id} />
         </div>
       </div>
+
+      <ReportDialog
+        isOpen={isReportDialogOpen}
+        targetLabel="item"
+        onClose={() => setIsReportDialogOpen(false)}
+        onSubmit={handleItemReport}
+        isSubmitting={isSubmittingReport}
+      />
     </div>
   );
 };
 
 // Full Screen Item Detail Component
 export const FullScreenItemDetail = ({ item, onClose }) => {
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportedItemIds, setReportedItemIds] = useState(() => new Set());
+  const [statusMessage, setStatusMessage] = useState('');
   const colorClass = getCardColors(item.id);
+  const isAuthenticated = tokenService.isAuthenticated();
+  const currentItemId = Number(item.id);
+  const hasReportedItem = reportedItemIds.has(currentItemId) || reportedService.hasReportedItem(currentItemId);
+
+  useEffect(() => {
+    setStatusMessage('');
+    setIsReportDialogOpen(false);
+  }, [currentItemId]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this item?')) {
@@ -315,6 +428,44 @@ export const FullScreenItemDetail = ({ item, onClose }) => {
       } catch (err) {
         console.error('Failed to delete:', err);
       }
+    }
+  };
+
+  const handleItemReport = async (reason) => {
+    if (!isAuthenticated) {
+      setStatusMessage('Please log in to report this item.');
+      window.location.href = '/login';
+      return;
+    }
+
+    if (hasReportedItem) {
+      throw new Error('You have already reported this item in this session.');
+    }
+
+    setStatusMessage('');
+    setIsSubmittingReport(true);
+
+    try {
+      await reportsAPI.createItemReport({ item: Number(item.id), reason });
+      reportedService.markItemReported(item.id);
+      setReportedItemIds((prev) => new Set([...prev, currentItemId]));
+      setStatusMessage('Report submitted successfully.');
+
+      try {
+        await itemsAPI.getItemById(item.id);
+        setTimeout(() => setStatusMessage(''), 1800);
+      } catch (refreshErr) {
+        if (refreshErr.status === 404) {
+          setStatusMessage('This item was removed after report threshold. Redirecting...');
+          setTimeout(() => {
+            window.location.href = '/items';
+          }, 900);
+          return;
+        }
+        throw refreshErr;
+      }
+    } finally {
+      setIsSubmittingReport(false);
     }
   };
 
@@ -497,10 +648,53 @@ export const FullScreenItemDetail = ({ item, onClose }) => {
               >
                 <i className="fas fa-trash"></i> Delete
               </button>
+              <button
+                style={{
+                  padding: '12px 24px',
+                  background: hasReportedItem ? '#8f95a1' : '#CF366B',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: hasReportedItem ? 'not-allowed' : 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: isSubmittingReport ? 0.8 : 1
+                }}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setStatusMessage('Please log in to report this item.');
+                    window.location.href = '/login';
+                    return;
+                  }
+                  setIsReportDialogOpen(true);
+                }}
+                disabled={hasReportedItem || isSubmittingReport}
+              >
+                <i className="fas fa-flag"></i> {hasReportedItem ? 'Reported' : 'Report'}
+              </button>
             </div>
+
+            {statusMessage && (
+              <p style={{ marginTop: '12px', color: '#16476A', fontSize: '14px', fontWeight: '500' }}>
+                {statusMessage}
+              </p>
+            )}
+
+            <CommentsSection itemId={item.id} />
           </div>
         </div>
       </div>
+
+      <ReportDialog
+        isOpen={isReportDialogOpen}
+        targetLabel="item"
+        onClose={() => setIsReportDialogOpen(false)}
+        onSubmit={handleItemReport}
+        isSubmitting={isSubmittingReport}
+      />
     </div>
   );
 };

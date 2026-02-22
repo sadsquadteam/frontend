@@ -2,3 +2,5 @@ export { default as ItemCard } from './ItemCard';
 export { default as ItemsGrid } from './ItemsGrid';
 export { default as ItemDetail } from './ItemDetail';
 export { default as AddItemForm } from './AddItemForm';
+export { default as CommentsSection } from './CommentsSection';
+export { default as ReportDialog } from './ReportDialog';

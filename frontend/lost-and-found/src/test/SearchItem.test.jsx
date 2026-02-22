@@ -7,6 +7,17 @@ import { itemsAPI } from '../services/api';
 vi.mock('../services/api', () => ({
   itemsAPI: {
     getAllItems: vi.fn(),
+    getItemById: vi.fn(),
+  },
+  reportsAPI: {
+    createItemReport: vi.fn(),
+  },
+  tokenService: {
+    isAuthenticated: vi.fn(() => false),
+  },
+  reportedService: {
+    hasReportedItem: vi.fn(() => false),
+    markItemReported: vi.fn(),
   },
 }));
 
