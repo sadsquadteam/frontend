@@ -1,0 +1,2 @@
+cd frontend/lost-and-found
+npx lint-staged
