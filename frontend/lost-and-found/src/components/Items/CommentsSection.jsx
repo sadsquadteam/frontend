@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { commentsAPI, reportsAPI, tokenService, reportedService } from '../../services/api';
+import { authAPI, commentsAPI, reportsAPI, tokenService, reportedService } from '../../services/api';
 import ReportDialog from './ReportDialog';
 
 const getStoredUser = () => {
@@ -19,8 +19,54 @@ const formatDate = (value) => {
   return date.toLocaleString();
 };
 
-const byNewest = (a, b) => new Date(b.created_at) - new Date(a.created_at);
 const byOldest = (a, b) => new Date(a.created_at) - new Date(b.created_at);
+const FLASH_DURATION_MS = 1400;
+
+const getCommentUserId = (comment) => {
+  if (!comment) return null;
+  if (typeof comment.user === 'number') return comment.user;
+  if (typeof comment.user === 'object' && comment.user !== null && typeof comment.user.id === 'number') {
+    return comment.user.id;
+  }
+  if (typeof comment.user_id === 'number') return comment.user_id;
+  if (typeof comment.author_id === 'number') return comment.author_id;
+  return null;
+};
+
+const getAuthorLabel = (comment, currentUser) => {
+  const user = comment?.user;
+  const commentUserId = getCommentUserId(comment);
+  if (
+    currentUser?.email &&
+    currentUser?.id &&
+    commentUserId &&
+    Number(currentUser.id) === Number(commentUserId)
+  ) {
+    return currentUser.email;
+  }
+
+  const email =
+    comment?.user_email ||
+    comment?.author_email ||
+    comment?.email ||
+    comment?.author?.email ||
+    comment?.created_by?.email ||
+    (typeof user === 'object' && user !== null ? user.email : null) ||
+    null;
+  if (email) return email;
+
+  if (typeof user === 'string') return user;
+
+  const userId = getCommentUserId(comment);
+  return userId ? `User #${userId}` : 'Unknown user';
+};
+
+const getPreviewText = (text) => {
+  if (!text) return '(empty message)';
+  const trimmed = String(text).trim();
+  if (!trimmed) return '(empty message)';
+  return trimmed.length > 110 ? `${trimmed.slice(0, 110)}...` : trimmed;
+};
 
 const CommentsSection = ({ itemId, onCommentsChanged }) => {
   const navigate = useNavigate();
@@ -35,14 +81,49 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [flashCommentId, setFlashCommentId] = useState(null);
 
   const [reportTargetComment, setReportTargetComment] = useState(null);
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [reportedTargets, setReportedTargets] = useState(() => new Set());
+  const commentRefs = useRef({});
+  const flashTimeoutRef = useRef(null);
 
-  const currentUser = useMemo(() => getStoredUser(), []);
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const currentUserId = currentUser?.id;
   const isAuthenticated = tokenService.isAuthenticated();
+
+  useEffect(() => {
+    let cancelled = false;
+    const hydrateCurrentUser = async () => {
+      if (!isAuthenticated) return;
+      const storedUser = getStoredUser();
+      if (!storedUser) return;
+      if (storedUser.email) {
+        setCurrentUser(storedUser);
+        return;
+      }
+      const accessToken = tokenService.getAccessToken();
+      if (!accessToken) {
+        setCurrentUser(storedUser);
+        return;
+      }
+      try {
+        const profile = await authAPI.getProfile(accessToken);
+        if (cancelled) return;
+        const merged = { ...storedUser, ...profile, email: profile?.email || storedUser?.email || null };
+        localStorage.setItem('user', JSON.stringify(merged));
+        setCurrentUser(merged);
+      } catch {
+        if (!cancelled) setCurrentUser(storedUser);
+      }
+    };
+
+    hydrateCurrentUser();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   const fetchComments = useCallback(async () => {
     setError('');
@@ -68,25 +149,43 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
     fetchComments();
   }, [fetchComments]);
 
-  const commentThread = useMemo(() => {
-    const topLevel = comments.filter((comment) => !comment.replies_to).sort(byNewest);
-    const repliesByParent = new Map();
+  useEffect(
+    () => () => {
+      if (flashTimeoutRef.current) {
+        clearTimeout(flashTimeoutRef.current);
+      }
+    },
+    []
+  );
 
-    comments
-      .filter((comment) => comment.replies_to)
-      .sort(byOldest)
-      .forEach((reply) => {
-        const key = String(reply.replies_to);
-        const existing = repliesByParent.get(key) || [];
-        existing.push(reply);
-        repliesByParent.set(key, existing);
-      });
-
-    return topLevel.map((comment) => ({
-      ...comment,
-      replies: repliesByParent.get(String(comment.id)) || [],
-    }));
+  const commentsById = useMemo(() => {
+    const map = new Map();
+    comments.forEach((comment) => {
+      map.set(String(comment.id), comment);
+    });
+    return map;
   }, [comments]);
+
+  const flatComments = useMemo(() => {
+    const sorted = [...comments].sort(byOldest);
+    return sorted.map((comment) => ({
+      ...comment,
+      replyTarget: comment.replies_to ? commentsById.get(String(comment.replies_to)) || null : null,
+    }));
+  }, [comments, commentsById]);
+
+  const jumpToComment = useCallback((commentId) => {
+    const targetNode = commentRefs.current[String(commentId)];
+    if (!targetNode) return;
+    targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setFlashCommentId(commentId);
+    if (flashTimeoutRef.current) {
+      clearTimeout(flashTimeoutRef.current);
+    }
+    flashTimeoutRef.current = setTimeout(() => {
+      setFlashCommentId(null);
+    }, FLASH_DURATION_MS);
+  }, []);
 
   const handleAuthRequiredAction = () => {
     setStatusMessage('Please log in to use comments and reports.');
@@ -255,8 +354,9 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
     }
   };
 
-  const renderCommentActions = (comment, isReply = false) => {
-    const isOwner = currentUserId && Number(comment.user) === Number(currentUserId);
+  const renderCommentActions = (comment) => {
+    const commentUserId = getCommentUserId(comment);
+    const isOwner = currentUserId && commentUserId && Number(commentUserId) === Number(currentUserId);
     const commentId = Number(comment.id);
     const hasValidId = Number.isFinite(commentId);
     const targetKey = hasValidId ? `comment:${commentId}` : null;
@@ -266,16 +366,14 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
 
     return (
       <div className="comment-actions">
-        {!isReply && (
-          <button
-            type="button"
-            className="comment-action-btn"
-            onClick={() => setActiveReplyParent(comment.id)}
-            disabled={isSubmitting}
-          >
-            Reply
-          </button>
-        )}
+        <button
+          type="button"
+          className="comment-action-btn"
+          onClick={() => setActiveReplyParent(comment.id)}
+          disabled={isSubmitting}
+        >
+          Reply
+        </button>
 
         {isOwner && (
           <>
@@ -354,16 +452,54 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
       {statusMessage && <p className="comment-status-message">{statusMessage}</p>}
       {error && <p className="comment-error-message">{error}</p>}
 
-      {isAuthenticated && commentThread.length === 0 && <p className="comment-empty">No comments yet.</p>}
+      {isAuthenticated && flatComments.length === 0 && <p className="comment-empty">No comments yet.</p>}
 
-      {isAuthenticated && commentThread.length > 0 && (
+      {isAuthenticated && flatComments.length > 0 && (
         <div className="comments-list">
-          {commentThread.map((comment) => (
-            <article key={comment.id} className="comment-card">
+          {flatComments.map((comment) => (
+            <article
+              key={comment.id}
+              className={`comment-card ${flashCommentId === comment.id ? 'comment-card--flash' : ''}`}
+              ref={(node) => {
+                if (node) {
+                  commentRefs.current[String(comment.id)] = node;
+                  return;
+                }
+                delete commentRefs.current[String(comment.id)];
+              }}
+            >
               <div className="comment-card-header">
-                <span className="comment-author">User #{comment.user}</span>
+                <span className="comment-author">{getAuthorLabel(comment, currentUser)}</span>
                 <span className="comment-date">{formatDate(comment.created_at)}</span>
               </div>
+
+              {comment.replies_to && (
+                <button
+                  type="button"
+                  className={`comment-reply-context ${comment.replyTarget ? 'is-link' : 'is-missing'}`}
+                  onClick={() => {
+                    if (comment.replyTarget?.id) jumpToComment(comment.replyTarget.id);
+                  }}
+                  disabled={!comment.replyTarget?.id}
+                  title={comment.replyTarget?.id ? 'Jump to replied message' : 'Original message is unavailable'}
+                >
+                  {comment.replyTarget ? (
+                    <>
+                        <span className="comment-reply-context-author">
+                        Reply to {getAuthorLabel(comment.replyTarget, currentUser)}
+                      </span>
+                      <span className="comment-reply-context-text">
+                        {getPreviewText(comment.replyTarget.text)}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="comment-reply-context-author">Reply to unavailable message</span>
+                      <span className="comment-reply-context-text">Original message was deleted or not loaded.</span>
+                    </>
+                  )}
+                </button>
+              )}
 
               {editingCommentId === comment.id ? (
                 <div className="comment-edit-box">
@@ -396,9 +532,9 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
                 <p className="comment-text">{comment.text}</p>
               )}
 
-              {renderCommentActions(comment)}
+              {editingCommentId !== comment.id && renderCommentActions(comment)}
 
-              {activeReplyParent === comment.id && (
+              {activeReplyParent === comment.id && editingCommentId !== comment.id && (
                 <div className="comment-reply-box">
                   <textarea
                     placeholder="Write your reply..."
@@ -430,52 +566,6 @@ const CommentsSection = ({ itemId, onCommentsChanged }) => {
                       Send Reply
                     </button>
                   </div>
-                </div>
-              )}
-
-              {comment.replies?.length > 0 && (
-                <div className="comment-replies">
-                  {comment.replies.map((reply) => (
-                    <div key={reply.id} className="comment-reply-card">
-                      <div className="comment-card-header">
-                        <span className="comment-author">User #{reply.user}</span>
-                        <span className="comment-date">{formatDate(reply.created_at)}</span>
-                      </div>
-
-                      {editingCommentId === reply.id ? (
-                        <div className="comment-edit-box">
-                          <textarea
-                            value={editingText}
-                            onChange={(e) => setEditingText(e.target.value)}
-                            rows={2}
-                            disabled={isSubmitting}
-                          />
-                          <div className="comment-inline-actions">
-                            <button
-                              type="button"
-                              className="comment-action-btn"
-                              onClick={() => setEditingCommentId(null)}
-                              disabled={isSubmitting}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="button"
-                              className="comment-action-btn primary"
-                              onClick={() => handleSaveEdit(reply.id)}
-                              disabled={isSubmitting}
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="comment-text">{reply.text}</p>
-                      )}
-
-                      {renderCommentActions(reply, true)}
-                    </div>
-                  ))}
                 </div>
               )}
             </article>

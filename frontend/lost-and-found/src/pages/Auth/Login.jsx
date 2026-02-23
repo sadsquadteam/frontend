@@ -96,14 +96,14 @@ const Login = () => {
       // Combine token info with user profile
       const user = {
         ...userProfile,
-        email: formData.email,
+        email: userProfile?.email || formData.email,
         access_token: response.access,
         refresh_token: response.refresh
       };
       
-      localStorage.setItem('user', JSON.stringify(userProfile));
+      localStorage.setItem('user', JSON.stringify(user));
       
-      navigate("/dashboard", { state: { user: userProfile } });
+      navigate("/dashboard", { state: { user } });
       
     } catch (error) {
       const errorMessage = error.message || "Login failed. Please check your credentials.";

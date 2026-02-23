@@ -257,7 +257,7 @@ const SimpleMap = ({ searchQuery = "", filters = {}, user }) => {
   }, [cleanup]);
 
   return (
-    <div className="map-wrapper" style={{ position: 'relative', height: '100vh', width: '100%' }}>
+    <div className="map-wrapper" style={{ position: 'relative', height: '100%', width: '100%' }}>
       <MapContainer
         center={mapCenter || MAP_CONSTANTS.sharifCenter}
         zoom={17}

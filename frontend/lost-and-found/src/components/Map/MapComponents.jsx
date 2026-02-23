@@ -202,7 +202,7 @@ export const SideMenu = ({ isOpen, onClose, item, onOpenFullScreen }) => {
       top: 0,
       right: isOpen ? 0 : '-450px',
       width: '420px',
-      height: '100vh',
+      height: '100%',
       backgroundColor: 'white',
       boxShadow: '-2px 0 10px rgba(0,0,0,0.1)',
       zIndex: 1500,
