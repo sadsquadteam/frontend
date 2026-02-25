@@ -9,7 +9,7 @@ const ItemDetailPage = () => {
       <Sidebar />
       
       <div className="main">
-        <Header title="Item Details" />
+        <Header title="Add New Item" />
         
         <main className="content">
           <ItemDetail />

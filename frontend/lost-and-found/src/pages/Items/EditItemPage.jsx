@@ -31,7 +31,7 @@ const EditItemPage = () => {
       <div className="layout">
         <Sidebar />
         <div className="main">
-          <Header title="Edit Item" />
+          <Header title="Add New Item" />
           <main className="content">Loading...</main>
         </div>
       </div>
@@ -43,7 +43,7 @@ const EditItemPage = () => {
       <div className="layout">
         <Sidebar />
         <div className="main">
-          <Header title="Edit Item" />
+          <Header title="Add New Item" />
           <main className="content">
             <div className="error-message">{error || 'Item not found'}</div>
           </main>
@@ -56,7 +56,7 @@ const EditItemPage = () => {
     <div className="layout">
       <Sidebar />
       <div className="main">
-        <Header title="Edit Item" />
+        <Header title="Add New Item" />
         <main className="content">
           <AddItemForm itemToEdit={item} isEditMode={true} />
         </main>
